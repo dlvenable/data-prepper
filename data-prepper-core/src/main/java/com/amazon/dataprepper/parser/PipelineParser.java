@@ -19,6 +19,7 @@ import com.amazon.dataprepper.model.source.Source;
 import com.amazon.dataprepper.parser.model.PipelineConfiguration;
 import com.amazon.dataprepper.pipeline.Pipeline;
 import com.amazon.dataprepper.pipeline.PipelineConnector;
+import com.amazon.dataprepper.plugin.PluginFactory;
 import com.amazon.dataprepper.plugins.buffer.BufferFactory;
 import com.amazon.dataprepper.plugins.prepper.PrepperFactory;
 import com.amazon.dataprepper.plugins.sink.SinkFactory;
@@ -50,9 +51,11 @@ public class PipelineParser {
     private static final String ATTRIBUTE_NAME = "name";
     private final String configurationFileLocation;
     private final Map<String, PipelineConnector> sourceConnectorMap = new HashMap<>(); //TODO Remove this and rely only on pipelineMap
+    private final PluginFactory pluginFactory;
 
     public PipelineParser(final String configurationFileLocation) {
         this.configurationFileLocation = configurationFileLocation;
+        pluginFactory = new PluginFactory();
     }
 
     /**
@@ -91,10 +94,12 @@ public class PipelineParser {
             final PluginSetting sourceSetting = pipelineConfiguration.getSourcePluginSetting();
             final Optional<Source> pipelineSource = getSourceIfPipelineType(pipelineName, sourceSetting,
                     pipelineMap, pipelineConfigurationMap);
-            final Source source = pipelineSource.orElseGet(() -> SourceFactory.newSource(sourceSetting));
+            final Source source = pipelineSource.orElseGet(() ->
+                    pluginFactory.loadPlugin(Source.class, sourceSetting));
 
             LOG.info("Building buffer for the pipeline [{}]", pipelineName);
-            final Buffer buffer = BufferFactory.newBuffer(pipelineConfiguration.getBufferPluginSetting());
+            final Buffer buffer = pluginFactory.loadPlugin(Buffer.class, pipelineConfiguration.getBufferPluginSetting());
+            //final Buffer buffer = BufferFactory.newBuffer(pipelineConfiguration.getBufferPluginSetting());
 
             LOG.info("Building preppers for the pipeline [{}]", pipelineName);
             final int prepperThreads = pipelineConfiguration.getWorkers();
@@ -157,7 +162,7 @@ public class PipelineParser {
             sourceConnectorMap.put(pipelineName, pipelineConnector); //TODO retrieve from parent Pipeline using name
             return pipelineConnector;
         } else {
-            return SinkFactory.newSink(pluginSetting);
+            return pluginFactory.loadPlugin(Sink.class, pluginSetting);
         }
     }
 

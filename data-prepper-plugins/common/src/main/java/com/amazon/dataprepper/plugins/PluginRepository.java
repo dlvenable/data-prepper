@@ -36,6 +36,7 @@ public final class  PluginRepository {
     private static final Map<String, Class<Buffer>> BUFFERS = new HashMap<>();
     private static final Map<String, Class<Prepper>> PREPPERS = new HashMap<>();
     private static final Map<String, Class<Sink>> SINKS = new HashMap<>();
+    private static final Map<String, Class<?>> ALL = new HashMap<>();
 
     static {
         findPlugins();
@@ -63,7 +64,13 @@ public final class  PluginRepository {
                     SINKS.put(pluginName, (Class<Sink>) annotatedClass);
                     break;
             }
+
+            ALL.put(pluginName, annotatedClass);
         }
+    }
+
+    public static Class<?> getAnyClass(final String name) {
+        return ALL.get(name);
     }
 
     public static Class<Source> getSourceClass(final String name) {

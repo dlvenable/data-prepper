@@ -21,7 +21,7 @@ apply from: "integrationTest.gradle"
 
 dependencies {
     implementation project(':data-prepper-api')
-    implementation project(':data-prepper-plugins')
+    //implementation project(':data-prepper-plugins')
     implementation project(':data-prepper-plugins:common')
     testImplementation project(':data-prepper-plugins:common').sourceSets.test.output
     implementation "com.fasterxml.jackson.core:jackson-databind:2.12.4"
@@ -37,20 +37,6 @@ dependencies {
     testImplementation "org.hamcrest:hamcrest:2.2"
 }
 
-jar {
-    dependsOn configurations.runtimeClasspath
-    manifest {
-        attributes('Implementation-Title': project.name,
-                'Implementation-Version': project.version,
-                'Main-Class': 'com.amazon.dataprepper.DataPrepperExecute')
-    }
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    exclude 'META-INF/*.RSA'
-    exclude 'META-INF/*.SF'
-    exclude 'META-INF/*.DSA'
-}
 
 jacocoTestCoverageVerification {
     dependsOn jacocoTestReport

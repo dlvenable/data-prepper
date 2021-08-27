@@ -12,7 +12,6 @@
 package com.amazon.dataprepper.parser.model;
 
 import com.amazon.dataprepper.model.configuration.PluginSetting;
-import com.amazon.dataprepper.plugins.buffer.blockingbuffer.BlockingBuffer;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -102,10 +101,22 @@ public class PipelineConfiguration {
     private PluginSetting getBufferFromConfigurationOrDefault(
             final Map.Entry<String, Map<String, Object>> bufferConfiguration) {
         if (bufferConfiguration == null) {
-            return BlockingBuffer.getDefaultPluginSettings();
+            return getDefaultPluginSettings();
         }
         return getPluginSettingFromConfiguration(bufferConfiguration);
     }
+
+    /**
+     * Copied from BlockingBuffer, which is no longer accessible
+     * @return
+     */
+    private static PluginSetting getDefaultPluginSettings() {
+        final Map<String, Object> settings = new HashMap<>();
+        settings.put("buffer_size", 512);
+        settings.put("batch_size", 8);
+        return new PluginSetting("bounded_blocking", settings);
+    }
+
 
     private List<PluginSetting> getSinksFromConfiguration(
             final List<Map.Entry<String, Map<String, Object>>> sinkConfigurations) {

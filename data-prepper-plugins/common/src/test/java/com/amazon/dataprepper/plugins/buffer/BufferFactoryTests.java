@@ -33,7 +33,7 @@ public class BufferFactoryTests {
     @Test
     public void testNewBufferClassByNameThatExists() {
         final PluginSetting pluginSetting = new PluginSetting("test_buffer", new HashMap<>());
-        final Buffer testBuffer = BufferFactory.newBuffer(pluginSetting);
+        final Buffer testBuffer = BufferFactoryOldStatic.newBuffer(pluginSetting);
         final Buffer expectedBuffer = new TestBuffer(pluginSetting);
         assertThat(testBuffer, notNullValue());
         assertThat(testBuffer.getClass().getSimpleName(), is(equalTo(expectedBuffer.getClass().getSimpleName())));
@@ -44,6 +44,6 @@ public class BufferFactoryTests {
      */
     @Test
     public void testNonExistentSinkRetrieval() {
-        assertThrows(PluginException.class, () -> BufferFactory.newBuffer(NON_EXISTENT_EMPTY_CONFIGURATION));
+        assertThrows(PluginException.class, () -> BufferFactoryOldStatic.newBuffer(NON_EXISTENT_EMPTY_CONFIGURATION));
     }
 }
