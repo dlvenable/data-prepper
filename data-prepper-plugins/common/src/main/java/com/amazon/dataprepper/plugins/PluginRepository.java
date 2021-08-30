@@ -18,6 +18,9 @@ import com.amazon.dataprepper.model.prepper.Prepper;
 import com.amazon.dataprepper.model.sink.Sink;
 import com.amazon.dataprepper.model.source.Source;
 import org.reflections.Reflections;
+import org.reflections.scanners.FieldAnnotationsScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +46,11 @@ public final class  PluginRepository {
     }
 
     private static void findPlugins() {
-        final Reflections reflections = new Reflections(DEFAULT_PLUGINS_CLASSPATH);
+        // https://stackoverflow.com/a/67556567/650176
+        final Reflections reflections = new Reflections(DEFAULT_PLUGINS_CLASSPATH,
+                new SubTypesScanner(),
+                new TypeAnnotationsScanner(),
+                new FieldAnnotationsScanner());
         final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(DataPrepperPlugin.class);
         for (final Class<?> annotatedClass : annotatedClasses) {
             final DataPrepperPlugin dataPrepperPluginAnnotation = annotatedClass

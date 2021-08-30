@@ -1,1 +1,1 @@
-com.amazon.dataprepper.plugin.StaticWrapperPluginProvider
+com.amazon.dataprepper.plugin.MavenLocalPluginProvider

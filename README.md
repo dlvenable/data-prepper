@@ -34,6 +34,7 @@ Deploy the jar to Maven local
 
 ```
 java15 ./gradlew -pdata-prepper-plugins/core-plugins publishToMavenLocal
+java15 ./gradlew -pdata-prepper-plugins/blocking-buffer publishToMavenLocal
 ```
 
 # Data Prepper
@@ -74,7 +75,7 @@ Caused by: org.reflections.ReflectionsException: Scanner TypeAnnotationsScanner 
 	... 7 more
 ```
 
-* Still need to implement the Maven Local Plugin Provider
+* Still need to implement the Maven Local Plugin Provider [DONE]
 
 ## Table of Contents
 

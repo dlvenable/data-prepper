@@ -10,8 +10,13 @@
  */
 
 plugins {
-    id 'java'
+    id 'java-library'
+    id 'maven-publish'
 }
+
+group 'com.amazon.dataprepper.poc.plugins'
+version '2.0.0-poc'
+
 dependencies {
     implementation project(':data-prepper-api')
 }
@@ -23,6 +28,14 @@ jacocoTestCoverageVerification {
             limit {
                 minimum = 0.90
             }
+        }
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
         }
     }
 }
