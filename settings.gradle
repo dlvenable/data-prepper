@@ -38,3 +38,5 @@ include 'data-prepper-plugins:peer-forwarder'
 include 'data-prepper-plugins:blocking-buffer'
 include 'data-prepper-cli-main'
 include 'data-prepper-cli-alt'
+include 'data-prepper-cli-alt2'
+

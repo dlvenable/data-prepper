@@ -55,14 +55,13 @@ public class MavenLocalPluginProvider implements PluginProvider {
         final URL bufferJarUrl = generateJarUrl(homeDirectory, POC_BUFFER_JAR_LOCATION);
 
         final ClassLoader classLoader = URLClassLoader.newInstance(
-                new URL[]{coreJarUrl, bufferJarUrl},
-                this.getClass().getClassLoader());
+                new URL[]{coreJarUrl, bufferJarUrl});
 
 
         plugins = new HashMap<>();
         final Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .addUrls(coreJarUrl, bufferJarUrl)
-                .addClassLoaders(classLoader, this.getClass().getClassLoader())
+                .addClassLoaders(classLoader)
                 .addScanners(
                         // https://stackoverflow.com/a/67556567/650176
                         new SubTypesScanner(false),
