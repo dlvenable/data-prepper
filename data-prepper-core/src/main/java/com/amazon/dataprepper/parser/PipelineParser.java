@@ -13,17 +13,15 @@ package com.amazon.dataprepper.parser;
 
 import com.amazon.dataprepper.model.buffer.Buffer;
 import com.amazon.dataprepper.model.configuration.PluginSetting;
+import com.amazon.dataprepper.model.plugin.PluginFactory;
 import com.amazon.dataprepper.model.prepper.Prepper;
 import com.amazon.dataprepper.model.sink.Sink;
 import com.amazon.dataprepper.model.source.Source;
 import com.amazon.dataprepper.parser.model.PipelineConfiguration;
 import com.amazon.dataprepper.pipeline.Pipeline;
 import com.amazon.dataprepper.pipeline.PipelineConnector;
-import com.amazon.dataprepper.plugin.PluginFactory;
-import com.amazon.dataprepper.plugins.buffer.BufferFactory;
+import com.amazon.dataprepper.plugin.PluginFactoryImpl;
 import com.amazon.dataprepper.plugins.prepper.PrepperFactory;
-import com.amazon.dataprepper.plugins.sink.SinkFactory;
-import com.amazon.dataprepper.plugins.source.SourceFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,7 +53,7 @@ public class PipelineParser {
 
     public PipelineParser(final String configurationFileLocation) {
         this.configurationFileLocation = configurationFileLocation;
-        pluginFactory = new PluginFactory();
+        pluginFactory = new PluginFactoryImpl();
     }
 
     /**
