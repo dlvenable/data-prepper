@@ -11,6 +11,7 @@
 
 package com.amazon.dataprepper.parser;
 
+import com.amazon.dataprepper.model.annotations.SingleThread;
 import com.amazon.dataprepper.model.buffer.Buffer;
 import com.amazon.dataprepper.model.configuration.PluginSetting;
 import com.amazon.dataprepper.model.plugin.PluginFactory;
@@ -21,6 +22,7 @@ import com.amazon.dataprepper.parser.model.PipelineConfiguration;
 import com.amazon.dataprepper.pipeline.Pipeline;
 import com.amazon.dataprepper.pipeline.PipelineConnector;
 import com.amazon.dataprepper.plugin.PluginFactoryImpl;
+import com.amazon.dataprepper.plugins.PluginRepository;
 import com.amazon.dataprepper.plugins.prepper.PrepperFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -31,6 +33,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -102,7 +106,7 @@ public class PipelineParser {
             LOG.info("Building preppers for the pipeline [{}]", pipelineName);
             final int prepperThreads = pipelineConfiguration.getWorkers();
             final List<List<Prepper>> prepperSets = pipelineConfiguration.getPrepperPluginSettings().stream()
-                    .map(PrepperFactory::newPreppers)
+                    .map(this::newPreppers)
                     .collect(Collectors.toList());
             final int readBatchDelay = pipelineConfiguration.getReadBatchDelay();
 
@@ -120,6 +124,19 @@ public class PipelineParser {
             processRemoveIfRequired(pipelineName, pipelineConfigurationMap, pipelineMap);
         }
 
+    }
+
+    private List<Prepper> newPreppers(final PluginSetting pluginSetting) {
+        final Class<Prepper> clazz = PluginRepository.getPrepperClass(pluginSetting.getName());
+        if (clazz.isAnnotationPresent(SingleThread.class)) {
+            final List<Prepper> preppers = new ArrayList<>();
+            for (int i = 0; i < pluginSetting.getNumberOfProcessWorkers(); i++) {
+                preppers.add(pluginFactory.loadPlugin(Prepper.class, pluginSetting));
+            }
+            return preppers;
+        } else {
+            return Collections.singletonList(pluginFactory.loadPlugin(Prepper.class, pluginSetting));
+        }
     }
 
     private Optional<Source> getSourceIfPipelineType(

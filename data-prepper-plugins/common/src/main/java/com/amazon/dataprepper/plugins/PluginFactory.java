@@ -24,6 +24,12 @@ public class PluginFactory {
     private static final Logger LOG = LoggerFactory.getLogger(PluginFactory.class);
 
     public static Object newPlugin(final PluginSetting pluginSetting, final Class<?> clazz) {
+
+        return newPlugin(pluginSetting, clazz, null);
+
+    }
+
+    public static Object newPlugin(final PluginSetting pluginSetting, final Class<?> clazz, com.amazon.dataprepper.model.plugin.PluginFactory innerPluginFactory) {
         if (clazz == null) {
             LOG.error("Failed to find the plugin with name {}. " +
                     "Please ensure that plugin is annotated with appropriate values", pluginSetting.getName());
@@ -34,12 +40,24 @@ public class PluginFactory {
             final Constructor<?> constructor = clazz.getConstructor(PluginSetting.class);
             return constructor.newInstance(pluginSetting);
         } catch (NoSuchMethodException e) {
-            LOG.error("Data Prepper plugin requires a constructor with {} parameter;" +
-                            " Plugin {} with name {} is missing such constructor.", PluginSetting.class.getSimpleName(),
-                    clazz.getSimpleName(), pluginSetting.getName(), e);
-            throw new PluginException(format("Data Prepper plugin requires a constructor with %s parameter;" +
-                            " Plugin %s with name %s is missing such constructor.", PluginSetting.class.getSimpleName(),
-                    clazz.getSimpleName(), pluginSetting.getName()), e);
+
+            try {
+                // Quick and inflexible approach to try two different constructors.
+                final Constructor<?> constructor = clazz.getConstructor(PluginSetting.class, com.amazon.dataprepper.model.plugin.PluginFactory.class);
+                return constructor.newInstance(pluginSetting, innerPluginFactory);
+            } catch (NoSuchMethodException ex) {
+                LOG.error("Data Prepper plugin requires a constructor with {} parameter;" +
+                                " Plugin {} with name {} is missing such constructor.", PluginSetting.class.getSimpleName(),
+                        clazz.getSimpleName(), pluginSetting.getName(), e);
+                throw new PluginException(format("Data Prepper plugin requires a constructor with %s parameter;" +
+                                " Plugin %s with name %s is missing such constructor.", PluginSetting.class.getSimpleName(),
+                        clazz.getSimpleName(), pluginSetting.getName()), e);
+            } catch (IllegalAccessException | InstantiationException | InvocationTargetException ex) {
+                LOG.error("Encountered exception while instantiating the plugin {}", clazz.getSimpleName(), ex);
+                throw new PluginException(format("Encountered exception while instantiating the plugin %s",
+                        clazz.getSimpleName()), ex);
+            }
+
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             LOG.error("Encountered exception while instantiating the plugin {}", clazz.getSimpleName(), e);
             throw new PluginException(format("Encountered exception while instantiating the plugin %s",

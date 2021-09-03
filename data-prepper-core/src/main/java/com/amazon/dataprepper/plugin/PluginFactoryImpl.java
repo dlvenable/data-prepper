@@ -27,6 +27,6 @@ public class PluginFactoryImpl implements PluginFactory {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No plugin found"));
 
-        return (T) com.amazon.dataprepper.plugins.PluginFactory.newPlugin(pluginSetting, pluginClass);
+        return (T) com.amazon.dataprepper.plugins.PluginFactory.newPlugin(pluginSetting, pluginClass, this);
     }
 }

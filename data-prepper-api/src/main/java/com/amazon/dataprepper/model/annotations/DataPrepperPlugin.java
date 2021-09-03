@@ -40,5 +40,6 @@ public @interface DataPrepperPlugin {
      */
     String name();
 
+    // TODO: Deprecate and remove this
     PluginType type();
 }
