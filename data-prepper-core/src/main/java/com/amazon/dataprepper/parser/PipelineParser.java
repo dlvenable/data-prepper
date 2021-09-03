@@ -127,7 +127,7 @@ public class PipelineParser {
     }
 
     private List<Prepper> newPreppers(final PluginSetting pluginSetting) {
-        final Class<Prepper> clazz = PluginRepository.getPrepperClass(pluginSetting.getName());
+        final Class<?> clazz = pluginFactory.getPluginClass(pluginSetting.getName());
         if (clazz.isAnnotationPresent(SingleThread.class)) {
             final List<Prepper> preppers = new ArrayList<>();
             for (int i = 0; i < pluginSetting.getNumberOfProcessWorkers(); i++) {

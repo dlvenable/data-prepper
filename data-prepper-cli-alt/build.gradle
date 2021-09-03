@@ -3,7 +3,7 @@ dependencies {
     implementation project(':data-prepper-core')
     implementation project(':data-prepper-api')
     // We need this for now. But, note that it just has the old static loading code.
-    // The plugins were moved into core-plugins.
+    // The plugins were moved into core-plugins, so they are not in here.
     implementation project(':data-prepper-plugins:common')
 }
 

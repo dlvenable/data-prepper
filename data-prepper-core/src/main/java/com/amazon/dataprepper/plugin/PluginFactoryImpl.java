@@ -29,4 +29,16 @@ public class PluginFactoryImpl implements PluginFactory {
 
         return (T) com.amazon.dataprepper.plugins.PluginFactory.newPlugin(pluginSetting, pluginClass, this);
     }
+
+    @Override
+    public <T> Class<? extends T> getPluginClass(final String pluginName) {
+        final Collection<PluginProvider> pluginProviders = PluginProviderLoader.getInstance().getPluginProviders();
+
+        return pluginProviders.stream()
+                .map(pluginProvider -> pluginProvider.<T>findPlugin(pluginName))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No plugin found"));
+
+    }
 }
