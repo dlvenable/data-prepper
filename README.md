@@ -35,6 +35,7 @@ Deploy the jar to Maven local
 ```
 java15 ./gradlew -pdata-prepper-plugins/core-plugins publishToMavenLocal
 java15 ./gradlew -pdata-prepper-plugins/blocking-buffer publishToMavenLocal
+java15 ./gradlew -pextended-plugins publishToMavenLocal
 ```
 
 # Data Prepper

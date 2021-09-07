@@ -1,4 +1,4 @@
-package com.amazon.dataprepper.plugins.prepper;
+package com.amazon.searchservices.plugins;
 
 import com.amazon.dataprepper.model.PluginType;
 import com.amazon.dataprepper.model.annotations.DataPrepperPlugin;

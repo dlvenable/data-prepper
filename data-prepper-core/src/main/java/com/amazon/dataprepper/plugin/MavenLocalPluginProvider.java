@@ -26,7 +26,9 @@ public class MavenLocalPluginProvider implements PluginProvider {
     private static final Logger LOG = LoggerFactory.getLogger(MavenLocalPluginProvider.class);
     private static final String POC_CORE_JAR_LOCATION = ".m2/repository/com/amazon/dataprepper/poc/plugins/core-plugins/2.0.0-poc/core-plugins-2.0.0-poc.jar";
     private static final String POC_BUFFER_JAR_LOCATION = ".m2/repository/com/amazon/dataprepper/poc/plugins/blocking-buffer/2.0.0-poc/blocking-buffer-2.0.0-poc.jar";
+    private static final String POC_EXTENDED_JAR_LOCATION = ".m2/repository/com/amazon/dataprepper/poc/plugins/extended-plugins/2.0.0-poc/extended-plugins-2.0.0-poc.jar";
     private static final String DEFAULT_PLUGINS_CLASSPATH = "com.amazon.dataprepper.plugins";
+    private static final String EXTENDED_PLUGINS_CLASSPATH = "com.amazon.searchservices.plugins";
 
     private Map<String, Class<?>> plugins;
 
@@ -53,21 +55,22 @@ public class MavenLocalPluginProvider implements PluginProvider {
         final String homeDirectory = System.getProperty("user.home");
         final URL coreJarUrl = generateJarUrl(homeDirectory, POC_CORE_JAR_LOCATION);
         final URL bufferJarUrl = generateJarUrl(homeDirectory, POC_BUFFER_JAR_LOCATION);
+        final URL extendedJarUrl = generateJarUrl(homeDirectory, POC_EXTENDED_JAR_LOCATION);
 
         final ClassLoader classLoader = URLClassLoader.newInstance(
-                new URL[]{coreJarUrl, bufferJarUrl});
+                new URL[]{coreJarUrl, bufferJarUrl, extendedJarUrl});
 
 
         plugins = new HashMap<>();
         final Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .addUrls(coreJarUrl, bufferJarUrl)
+                .addUrls(coreJarUrl, bufferJarUrl, extendedJarUrl)
                 .addClassLoaders(classLoader)
                 .addScanners(
                         // https://stackoverflow.com/a/67556567/650176
                         new SubTypesScanner(false),
                         new TypeAnnotationsScanner(),
                         new FieldAnnotationsScanner())
-                .forPackages(DEFAULT_PLUGINS_CLASSPATH));
+                .forPackages(DEFAULT_PLUGINS_CLASSPATH, EXTENDED_PLUGINS_CLASSPATH));
 
         LOG.info("Starting to load types");
         //LOG.info("All types count {}", reflections.getAllTypes().size());
