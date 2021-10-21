@@ -11,6 +11,8 @@
 
 package com.amazon.dataprepper.metrics;
 
+import com.amazon.dataprepper.metrics.PluginMetrics;
+
 public class MetricNames {
     private MetricNames() {}
 
