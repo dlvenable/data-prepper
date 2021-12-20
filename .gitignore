@@ -8,3 +8,5 @@ build
 
 # Ignore things downloaded for gradle es plugin
 gradle/tools
+
+## Making changes
