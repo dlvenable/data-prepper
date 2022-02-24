@@ -1,0 +1,9 @@
+say-hello-pipeline:
+  workers: 4
+  delay: "2000"
+  source:
+    random:
+  prepper:
+    - hello:
+  sink:
+    - stdout:
