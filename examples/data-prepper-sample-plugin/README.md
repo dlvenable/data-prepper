@@ -17,23 +17,20 @@ First, assemble Data Prepper.
 ./gradlew clean assemble
 ```
 
-### 2) Publish Artifacts to Maven Local
-
-```
-./gradlew publishToMavenLocal
-```
-
 
 ## Run Sample
 
 ### 1) Build Sample
 
 ```
-/gradlew -p examples/data-prepper-sample-plugin assemble
+./gradlew -p examples/data-prepper-sample-plugin assemble
 ```
 
 ### 2) Run Data Prepper with Plugin
 
+```
+./examples/data-prepper-sample-plugin/run-sample.sh
+```
 
 
 You should see event lines which look like:
@@ -45,12 +42,6 @@ You should see event lines which look like:
 ```
 
 ## Improvements Coming in Data Prepper
-
-### Maven
-
-GitHub [421](https://github.com/opensearch-project/data-prepper/issues/421)
-
-Once Data Prepper deploys to Maven, you will not need to publish Data Prepper to your Maven local directory.
 
 ### Directory Structure
 

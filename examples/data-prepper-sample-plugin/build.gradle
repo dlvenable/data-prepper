@@ -11,12 +11,11 @@ group 'org.opensearch.sample'
 version '1.0-SNAPSHOT'
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-    implementation 'org.opensearch.dataprepper:data-prepper-api:1.3.0-SNAPSHOT'
+    implementation 'org.opensearch.dataprepper:data-prepper-api:1.3.0'
 }
 
 test {
