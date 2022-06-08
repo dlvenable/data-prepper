@@ -12,9 +12,9 @@ jobs:
   build:
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest]
         java: [11, 17]
-
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: Set up JDK ${{ matrix.java }}
