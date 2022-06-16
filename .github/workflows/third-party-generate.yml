@@ -18,13 +18,14 @@ jobs:
     - name: Checkout Data-Prepper
       uses: actions/checkout@v2
     - name: Generate Third Party Report
-      run: ./gradlew generateThirdPartyReport
+      run: ./gradlew --no-daemon generateThirdPartyReport
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v4.0.4
       with:
         add-paths: THIRD-PARTY
         commit-message: 'Generated THIRD-PARTY file'
         signoff: true
+        branch: generate-${{ github.run_number }}
         delete-branch: true
         title: 'Generated THIRD-PARTY file'
         body: |
