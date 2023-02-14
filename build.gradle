@@ -84,7 +84,7 @@ subprojects {
         implementation platform('com.fasterxml.jackson:jackson-bom:2.14.1')
         implementation platform('io.micrometer:micrometer-bom:1.9.4')
         implementation libs.guava.core
-        implementation 'org.slf4j:slf4j-api:2.0.5'
+        implementation 'org.slf4j:slf4j-api:2.0.6'
         testImplementation testLibs.bundles.junit
         testImplementation testLibs.bundles.mockito
         testImplementation 'org.hamcrest:hamcrest:2.2'
