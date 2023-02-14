@@ -5,6 +5,12 @@
 
 package org.opensearch.dataprepper.plugins.processor;
 
+import com.google.common.collect.Interner;
+import com.google.common.collect.Interners;
+import com.google.common.collect.Sets;
+import com.google.common.primitives.SignedBytes;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.opensearch.dataprepper.model.annotations.DataPrepperPlugin;
 import org.opensearch.dataprepper.model.annotations.SingleThread;
 import org.opensearch.dataprepper.model.configuration.PluginSetting;
@@ -15,10 +21,6 @@ import org.opensearch.dataprepper.model.processor.AbstractProcessor;
 import org.opensearch.dataprepper.model.processor.Processor;
 import org.opensearch.dataprepper.model.record.Record;
 import org.opensearch.dataprepper.model.trace.Span;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
-import com.google.common.primitives.SignedBytes;
-import org.apache.commons.codec.binary.Hex;
 import org.opensearch.dataprepper.plugins.processor.state.MapDbProcessorState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +51,7 @@ public class ServiceMapStatefulProcessor extends AbstractProcessor<Record<Event>
     private static final Logger LOG = LoggerFactory.getLogger(ServiceMapStatefulProcessor.class);
     private static final String EMPTY_SUFFIX = "-empty";
     private static final String EVENT_TYPE = "event";
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final Interner<String> PERMANENT_STRING_POOL = Interners.newStrongInterner();
     private static final Collection<Record<Event>> EMPTY_COLLECTION = Collections.emptySet();
     private static final Integer TO_MILLIS = 1_000;
 
@@ -146,25 +148,36 @@ public class ServiceMapStatefulProcessor extends AbstractProcessor<Record<Event>
 
     private void processSpan(final Span span, final Map<byte[], ServiceMapStateData> batchStateData) {
         if (span.getServiceName() != null) {
-            final String serviceName = span.getServiceName();
+            final String serviceName = PERMANENT_STRING_POOL.intern(span.getServiceName());
+            final String serviceKind = PERMANENT_STRING_POOL.intern(span.getKind());
             final String spanId = span.getSpanId();
             final String traceId = span.getTraceId();
             final String parentSpanId = span.getParentSpanId();
+
+            final byte[] hexDecodedTraceId;
+
+            try {
+                hexDecodedTraceId = Hex.decodeHex(traceId);
+            } catch (final DecoderException e) {
+                LOG.error("Unable to decode traceId from hex. traceId='{}'", traceId, e);
+                return;
+            }
+
             try {
                 batchStateData.put(
                         Hex.decodeHex(spanId),
                         new ServiceMapStateData(
                                 serviceName,
-                                parentSpanId.isEmpty()? null : Hex.decodeHex(parentSpanId),
-                                Hex.decodeHex(traceId),
-                                span.getKind(),
+                                parentSpanId.isEmpty() ? null : Hex.decodeHex(parentSpanId),
+                                hexDecodedTraceId,
+                                serviceKind,
                                 span.getName()));
             } catch (Exception e) {
                 LOG.error("Caught exception trying to put service map state data into batch", e);
             }
             if (parentSpanId.isEmpty()) {
                 try {
-                    currentTraceGroupWindow.put(Hex.decodeHex(traceId), span.getName());
+                    currentTraceGroupWindow.put(hexDecodedTraceId, span.getName());
                 } catch (Exception e) {
                     LOG.error("Caught exception trying to put trace group name", e);
                 }
