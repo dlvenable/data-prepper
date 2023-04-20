@@ -66,7 +66,8 @@ class PipelinesWithAcksIT {
             assertThat(outputRecords, not(empty()));
             assertThat(outputRecords.size(), equalTo(numRecords));
         });
-        assertTrue(inMemorySourceAccessor.getAckReceived());
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().size(), equalTo(1));
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().get(0), equalTo(true));
 
     }
 
@@ -82,7 +83,8 @@ class PipelinesWithAcksIT {
             assertThat(outputRecords, not(empty()));
             assertThat(outputRecords.size(), equalTo(numRecords));
         });
-        assertTrue(inMemorySourceAccessor.getAckReceived());
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().size(), equalTo(1));
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().get(0), equalTo(true));
     }
 
     @Test
@@ -97,7 +99,8 @@ class PipelinesWithAcksIT {
             assertThat(outputRecords, not(empty()));
             assertThat(outputRecords.size(), equalTo(numRecords));
         });
-        assertTrue(inMemorySourceAccessor.getAckReceived());
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().size(), equalTo(1));
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().get(0), equalTo(true));
     }
 
     @Test
@@ -112,7 +115,8 @@ class PipelinesWithAcksIT {
             assertThat(outputRecords, not(empty()));
             assertThat(outputRecords.size(), equalTo(numRecords));
         });
-        assertTrue(inMemorySourceAccessor.getAckReceived());
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().size(), equalTo(1));
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().get(0), equalTo(true));
     }
 
     @Test
@@ -127,7 +131,8 @@ class PipelinesWithAcksIT {
             assertThat(outputRecords, not(empty()));
             assertThat(outputRecords.size(), equalTo(numRecords));
         });
-        assertTrue(inMemorySourceAccessor.getAckReceived());
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().size(), equalTo(1));
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().get(0), equalTo(true));
     }
 
     @Test
@@ -142,7 +147,8 @@ class PipelinesWithAcksIT {
             assertThat(outputRecords, not(empty()));
             assertThat(outputRecords.size(), equalTo(2*numRecords));
         });
-        assertTrue(inMemorySourceAccessor.getAckReceived());
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().size(), equalTo(1));
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().get(0), equalTo(true));
     }
 
     @Test
@@ -157,7 +163,8 @@ class PipelinesWithAcksIT {
             assertThat(outputRecords, not(empty()));
             assertThat(outputRecords.size(), equalTo(3*numRecords));
         });
-        assertTrue(inMemorySourceAccessor.getAckReceived());
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().size(), equalTo(1));
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().get(0), equalTo(true));
     }
 
     @Test
@@ -172,7 +179,8 @@ class PipelinesWithAcksIT {
             assertThat(outputRecords, not(empty()));
             assertThat(outputRecords.size(), equalTo(3*numRecords));
         });
-        assertTrue(inMemorySourceAccessor.getAckReceived());
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().size(), equalTo(1));
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().get(0), equalTo(true));
     }
 
     @Test
@@ -187,7 +195,7 @@ class PipelinesWithAcksIT {
             assertThat(outputRecords, not(empty()));
             assertThat(outputRecords.size(), equalTo(numRecords));
         });
-        assertThat(inMemorySourceAccessor.getAckReceived(), equalTo(null));
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().size(), equalTo(0));
     }
 
     @Test
@@ -203,6 +211,7 @@ class PipelinesWithAcksIT {
             assertThat(outputRecords, not(empty()));
             assertThat(outputRecords.size(), equalTo(3*numRecords));
         });
-        assertFalse(inMemorySourceAccessor.getAckReceived());
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().size(), equalTo(1));
+        assertThat(inMemorySourceAccessor.getAllAcksReceived().get(0), equalTo(false));
     }
 }

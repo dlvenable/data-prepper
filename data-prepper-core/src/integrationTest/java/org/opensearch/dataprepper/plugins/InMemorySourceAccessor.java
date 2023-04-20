@@ -19,7 +19,6 @@ import java.util.UUID;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Provides a mechanism to write records to an in_memory source. This allows the pipeline to execute
@@ -28,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class InMemorySourceAccessor {
     private final Map<String, List<Record<Event>>> recordsMap = new HashMap<>();
     private EventFactory eventFactory;
-    private AtomicBoolean ackReceived;
+    private final List<Boolean> acksReceived = Collections.synchronizedList(new ArrayList<>());
     private final Lock lock;
 
     public InMemorySourceAccessor() {
@@ -39,19 +38,12 @@ public class InMemorySourceAccessor {
         eventFactory = factory;
     }
 
-    public void setAckReceived(boolean newValue) {
-        if (ackReceived == null) {
-            ackReceived = new AtomicBoolean(newValue);
-        } else {
-            ackReceived.set(newValue);
-        }
+    public void setAckReceived(final boolean newValue) {
+        acksReceived.add(newValue);
     }
 
-    public Boolean getAckReceived() {
-        if (ackReceived == null) {
-            return null;
-        }
-        return ackReceived.get();
+    public List<Boolean> getAllAcksReceived() {
+        return Collections.unmodifiableList(acksReceived);
     }
 
     public void submit(final String testingKey, int numRecords) {

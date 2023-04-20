@@ -101,12 +101,10 @@ public class InMemorySource implements Source<Record<Event>> {
 
     private class AcknowledgementSourceRunner extends SourceRunner {
         private final AcknowledgementSetManager acknowledgementSetManager;
-        private AtomicBoolean ackReceived;
 
         AcknowledgementSourceRunner(final AcknowledgementSetManager acknowledgementSetManager, final Buffer<Record<Event>> buffer) {
             super(buffer);
             this.acknowledgementSetManager = acknowledgementSetManager;
-            this.ackReceived = new AtomicBoolean(false);
         }
 
         @Override
