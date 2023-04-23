@@ -54,14 +54,31 @@ function query_hits_gt_zero () {
     local URL=$1
     local SEARCH_RESPONSE
     SEARCH_RESPONSE=$(curl -s -k -u 'admin:admin' "${URL}")
+
+    local remaining_attempts=10
     local LOG_COUNT=0
 
-    if command -v jq &> /dev/null
-    then
-        LOG_COUNT=$(jq '.hits.total.value' <<< "${SEARCH_RESPONSE}")
-    else
-        LOG_COUNT=$(docker run alpine /bin/sh -c "apk -q --no-cache add jq && echo '${SEARCH_RESPONSE}' | jq '.hits.total.value'")
-    fi
+    while [ $remaining_attempts -gt 0 ]
+    do
+      LOG_COUNT=0
+
+      if command -v jq &> /dev/null
+      then
+          LOG_COUNT=$(jq '.hits.total.value' <<< "${SEARCH_RESPONSE}")
+      else
+          LOG_COUNT=$(docker run alpine /bin/sh -c "apk -q --no-cache add jq && echo '${SEARCH_RESPONSE}' | jq '.hits.total.value'")
+      fi
+
+      if [ "${LOG_COUNT}" -gt 0 ]
+      then
+          remaining_attempts=0
+      else
+          echo "No hits found with query url ${URL}"
+          echo "Pausing for 20 seconds"
+          remaining_attempts=$((remaining_attempts-1))
+          sleep 20
+      fi
+    done
 
     if [ "${LOG_COUNT}" -gt 0 ]
     then
@@ -73,6 +90,7 @@ function query_hits_gt_zero () {
         echo "Smoke test failed"
         end_tests 1
     fi
+
 }
 
 while getopts "hv:r::o::i::" arg; do
@@ -153,7 +171,7 @@ done
 echo -e "\b "
 echo "Data Prepper started!"
 
-sleep 30
+sleep 20
 
 echo "Ready to begin smoke tests. Running cURL commands."
 echo ""
