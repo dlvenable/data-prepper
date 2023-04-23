@@ -26,7 +26,7 @@ def run():
     tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span("http-handler"):
         with tracer.start_as_current_span("my-cool-function"):
-            print("I'm doing something!")
+            print("I'm doing something and should be generating spans!")
 
 if __name__ == "__main__":
     run()
