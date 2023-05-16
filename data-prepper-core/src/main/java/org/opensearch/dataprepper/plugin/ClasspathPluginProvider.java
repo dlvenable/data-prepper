@@ -6,9 +6,11 @@
 package org.opensearch.dataprepper.plugin;
 
 import org.opensearch.dataprepper.model.annotations.DataPrepperPlugin;
+import org.opensearch.dataprepper.model.plugin.ExtensionPlugin;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +28,7 @@ public class ClasspathPluginProvider implements PluginProvider {
 
     private final Reflections reflections;
     private Map<String, Map<Class<?>, Class<?>>> nameToSupportedTypeToPluginType;
+    private Set<Class<? extends ExtensionPlugin>> extensionPluginClasses;
 
     public ClasspathPluginProvider() {
         this(new Reflections(new ConfigurationBuilder()
@@ -54,6 +57,14 @@ public class ClasspathPluginProvider implements PluginProvider {
         return Optional.ofNullable((Class<? extends T>) supportedTypesMap.get(pluginType));
     }
 
+    @Override
+    public Collection<Class<? extends ExtensionPlugin>> loadExtensionPluginClasses() {
+        if(extensionPluginClasses == null) {
+            extensionPluginClasses = scanForExtensionPlugins();
+        }
+        return extensionPluginClasses;
+    }
+
     private Map<String, Map<Class<?>, Class<?>>> scanForPlugins() {
         final Set<Class<?>> dataPrepperPluginClasses =
                 reflections.getTypesAnnotatedWith(DataPrepperPlugin.class);
@@ -72,6 +83,10 @@ public class ClasspathPluginProvider implements PluginProvider {
         }
 
         return pluginsMap;
+    }
+
+    private Set<Class<? extends ExtensionPlugin>> scanForExtensionPlugins() {
+        return reflections.getSubTypesOf(ExtensionPlugin.class);
     }
 
     private void addOptionalDeprecatedPluginName(

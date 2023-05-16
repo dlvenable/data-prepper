@@ -7,6 +7,8 @@ package org.opensearch.dataprepper.plugin;
 
 import org.opensearch.dataprepper.model.annotations.DataPrepperPlugin;
 import org.opensearch.dataprepper.model.configuration.PluginSetting;
+import org.opensearch.dataprepper.model.plugin.Extension;
+import org.opensearch.dataprepper.model.plugin.ExtensionPlugin;
 import org.opensearch.dataprepper.model.plugin.NoPluginFoundException;
 import org.opensearch.dataprepper.model.plugin.PluginFactory;
 import org.opensearch.dataprepper.event.DefaultEventFactory;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * The primary implementation of {@link PluginFactory}.
@@ -94,6 +97,24 @@ public class DefaultPluginFactory implements PluginFactory {
         }
         return plugins;
     }
+
+    @Override
+    public Collection<Extension<?>> loadExtensions() {
+        final List<Collection<Class<? extends ExtensionPlugin>>> extensionClasses = pluginProviders.stream()
+                .map(PluginProvider::loadExtensionPluginClasses)
+                .collect(Collectors.toList());
+
+
+        return null;
+    }
+
+    /*
+    @Override
+    public <T> Extension<T> loadExtension(Class<T> extensionClass, PluginSetting pluginSetting) {
+        return null;
+    }
+
+     */
 
     private <T> PluginArgumentsContext getConstructionContext(final PluginSetting pluginSetting, final Class<? extends T> pluginClass) {
         final DataPrepperPlugin pluginAnnotation = pluginClass.getAnnotation(DataPrepperPlugin.class);

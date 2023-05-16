@@ -5,6 +5,10 @@
 
 package org.opensearch.dataprepper.plugin;
 
+import org.opensearch.dataprepper.model.plugin.ExtensionPlugin;
+
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,4 +31,7 @@ public interface PluginProvider {
      * @since 1.2
      */
     <T> Optional<Class<? extends T>> findPluginClass(Class<T> pluginType, String pluginName);
+
+    Collection<Class<? extends ExtensionPlugin>> loadExtensionPluginClasses();
+    //<T> Optional<Class<? extends T>> findPluginExtensionClass(Class<T> pluginType);
 }

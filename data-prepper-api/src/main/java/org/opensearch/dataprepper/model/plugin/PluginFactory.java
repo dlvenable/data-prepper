@@ -7,6 +7,7 @@ package org.opensearch.dataprepper.model.plugin;
 
 import org.opensearch.dataprepper.model.configuration.PluginSetting;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
@@ -44,4 +45,7 @@ public interface PluginFactory {
     <T> List<T> loadPlugins(
             final Class<T> baseClass, final PluginSetting pluginSetting,
             final Function<Class<? extends T>, Integer> numberOfInstancesFunction);
+
+    //<T> Extension<T> loadExtension(final Class<T> extensionClass, final PluginSetting pluginSetting);
+    Collection<Extension<?>> loadExtensions();
 }

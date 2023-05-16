@@ -1,0 +1,10 @@
+
+dependencies {
+    implementation project(':data-prepper-api')
+    implementation project(':data-prepper-plugins:aws-plugin-api')
+    implementation 'software.amazon.awssdk:auth'
+}
+
+test {
+    useJUnitPlatform()
+}
