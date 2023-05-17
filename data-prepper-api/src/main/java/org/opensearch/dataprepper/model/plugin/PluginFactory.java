@@ -47,5 +47,5 @@ public interface PluginFactory {
             final Function<Class<? extends T>, Integer> numberOfInstancesFunction);
 
     //<T> Extension<T> loadExtension(final Class<T> extensionClass, final PluginSetting pluginSetting);
-    Collection<Extension<?>> loadExtensions();
+    //Collection<Extension<?>> loadExtensions();
 }

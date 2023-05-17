@@ -9,4 +9,6 @@ import java.util.Optional;
 
 public interface ExtensionProvider<T> {
     Optional<T> provideInstance();
+
+    Class<T> supportedClass();
 }

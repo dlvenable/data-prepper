@@ -26,12 +26,16 @@ import java.util.Objects;
  */
 @Named
 class PluginBeanFactoryProvider implements Provider<BeanFactory> {
-    private final ApplicationContext sharedPluginApplicationContext;
+    private final GenericApplicationContext sharedPluginApplicationContext;
 
     @Inject
     PluginBeanFactoryProvider(final ApplicationContext coreContext) {
         final ApplicationContext publicContext = Objects.requireNonNull(coreContext.getParent());
         sharedPluginApplicationContext = new GenericApplicationContext(publicContext);
+    }
+
+    GenericApplicationContext getSharedPluginApplicationContext() {
+        return sharedPluginApplicationContext;
     }
 
     /**

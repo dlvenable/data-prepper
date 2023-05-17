@@ -32,6 +32,6 @@ public interface PluginProvider {
      */
     <T> Optional<Class<? extends T>> findPluginClass(Class<T> pluginType, String pluginName);
 
-    Collection<Class<? extends ExtensionPlugin>> loadExtensionPluginClasses();
+    //Collection<Class<? extends ExtensionPlugin>> loadExtensionPluginClasses();
     //<T> Optional<Class<? extends T>> findPluginExtensionClass(Class<T> pluginType);
 }
