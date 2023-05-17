@@ -26,7 +26,7 @@ public class TestExtension implements ExtensionPlugin {
     }
 
     @Override
-    public void apply(ExtensionPoints extensionPoints) {
+    public void apply(final ExtensionPoints extensionPoints) {
 
         extensionPoints.addExtensionProvider(new TestExtensionProvider());
     }
@@ -42,7 +42,7 @@ public class TestExtension implements ExtensionPlugin {
     public static class TestModel {
         private final String extensionId;
 
-        private TestModel(String extensionId) {
+        private TestModel(final String extensionId) {
 
             this.extensionId = extensionId;
         }
@@ -54,7 +54,7 @@ public class TestExtension implements ExtensionPlugin {
     private class TestExtensionProvider implements ExtensionProvider<TestModel> {
 
         @Override
-        public Optional<TestModel> provideInstance() {
+        public Optional<TestModel> provideInstance(final Context context) {
             return Optional.of(new TestModel(extensionId));
         }
 
