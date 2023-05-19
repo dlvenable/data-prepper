@@ -26,11 +26,11 @@ public class AwsCredentialsOptions {
     }
 
     public Optional<String> getStsRoleArn() {
-        return Optional.of(stsRoleArn);
+        return Optional.ofNullable(stsRoleArn);
     }
 
     public Optional<Region> getRegion() {
-        return Optional.of(region);
+        return Optional.ofNullable(region);
     }
 
     public Map<String, String> getStsHeaderOverrides() {
@@ -49,6 +49,11 @@ public class AwsCredentialsOptions {
 
         public Builder withRegion(Region region) {
             this.region = region;
+            return this;
+        }
+
+        public Builder withRegion(String region) {
+            this.region = Region.of(region);
             return this;
         }
 

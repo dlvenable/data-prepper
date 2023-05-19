@@ -96,6 +96,7 @@ public class SqsWorker implements Runnable {
     @Override
     public void run() {
 
+        LOG.info("Starting Sqs Worker");
         while (!Thread.currentThread().isInterrupted()) {
             int messagesProcessed = 0;
             try {

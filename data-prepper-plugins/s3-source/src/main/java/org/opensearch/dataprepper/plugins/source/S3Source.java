@@ -26,6 +26,8 @@ import org.opensearch.dataprepper.plugins.source.ownership.ConfigBucketOwnerProv
 import org.opensearch.dataprepper.plugins.source.configuration.S3SelectOptions;
 import org.opensearch.dataprepper.plugins.source.configuration.S3SelectCSVOption;
 import org.opensearch.dataprepper.plugins.source.configuration.S3SelectJsonOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.services.s3.model.CompressionType;
 
@@ -35,7 +37,7 @@ import java.util.function.BiConsumer;
 
 @DataPrepperPlugin(name = "s3", pluginType = Source.class, pluginConfigurationType = S3SourceConfig.class)
 public class S3Source implements Source<Record<Event>>, UsesSourceCoordination {
-
+    private static final Logger LOG = LoggerFactory.getLogger(S3Source.class);
     private final PluginMetrics pluginMetrics;
     private final S3SourceConfig s3SourceConfig;
     private SqsService sqsService;
@@ -55,6 +57,7 @@ public class S3Source implements Source<Record<Event>>, UsesSourceCoordination {
             final PluginFactory pluginFactory,
             final AcknowledgementSetManager acknowledgementSetManager,
             final AwsCredentialsSupplier awsCredentialsSupplier) {
+        LOG.info("Constructed S3 source.");
         this.pluginMetrics = pluginMetrics;
         this.s3SourceConfig = s3SourceConfig;
         this.pluginFactory = pluginFactory;
@@ -71,6 +74,7 @@ public class S3Source implements Source<Record<Event>>, UsesSourceCoordination {
 
     @Override
     public void start(Buffer<Record<Event>> buffer) {
+        LOG.info("Starting S3 source.");
         if (buffer == null) {
             throw new IllegalStateException("Buffer provided is null");
         }
@@ -117,6 +121,7 @@ public class S3Source implements Source<Record<Event>>, UsesSourceCoordination {
             s3Handler = new S3ObjectWorker(s3ObjectRequest);
         }
         if(Objects.nonNull(s3SourceConfig.getSqsOptions())) {
+            LOG.info("Using SQS");
             final S3Service s3Service = new S3Service(s3Handler);
             sqsService = new SqsService(acknowledgementSetManager, s3SourceConfig, s3Service, pluginMetrics, credentialsProvider);
             sqsService.start();
@@ -125,6 +130,7 @@ public class S3Source implements Source<Record<Event>>, UsesSourceCoordination {
             s3ScanService = new S3ScanService(s3SourceConfig,s3ClientBuilderFactory,s3Handler,bucketOwnerProvider, sourceCoordinator);
             s3ScanService.start();
         }
+        LOG.info("Done starting S3");
     }
 
     @Override
