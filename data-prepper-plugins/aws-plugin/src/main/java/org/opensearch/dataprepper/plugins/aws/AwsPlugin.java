@@ -15,7 +15,9 @@ public class AwsPlugin implements ExtensionPlugin {
 
     @DataPrepperPluginConstructor
     public AwsPlugin() {
-        defaultAwsCredentialsSupplier = new DefaultAwsCredentialsSupplier();
+        final CredentialsProviderFactory credentialsProviderFactory = new CredentialsProviderFactory();
+        final CredentialsCache credentialsCache = new CredentialsCache();
+        defaultAwsCredentialsSupplier = new DefaultAwsCredentialsSupplier(credentialsProviderFactory, credentialsCache);
     }
 
     @Override

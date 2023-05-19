@@ -8,15 +8,19 @@ package org.opensearch.dataprepper.plugin;
 import org.opensearch.dataprepper.model.plugin.ExtensionPlugin;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Named
 public class ClasspathExtensionProvider implements ExtensionProvider {
+    private static final Logger LOG = LoggerFactory.getLogger(ClasspathExtensionProvider.class);
     private final Reflections reflections;
     private Set<Class<? extends ExtensionPlugin>> extensionPluginClasses;
 
@@ -38,7 +42,15 @@ public class ClasspathExtensionProvider implements ExtensionProvider {
     }
 
     private Set<Class<? extends ExtensionPlugin>> scanForExtensionPlugins() {
-        return reflections.getSubTypesOf(ExtensionPlugin.class);
+        final Set<Class<? extends ExtensionPlugin>> extensionClasses = reflections.getSubTypesOf(ExtensionPlugin.class);
+
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("Found {} extension classes.", extensionClasses.size());
+            LOG.debug("Extensions classes: {}",
+                    extensionClasses.stream().map(Class::getName).collect(Collectors.joining(", ")));
+        }
+
+        return extensionClasses;
     }
 
 }

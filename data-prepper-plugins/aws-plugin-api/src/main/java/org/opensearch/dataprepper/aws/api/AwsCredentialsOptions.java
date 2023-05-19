@@ -8,13 +8,14 @@ package org.opensearch.dataprepper.aws.api;
 import software.amazon.awssdk.regions.Region;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class AwsCredentialsOptions {
     private final String stsRoleArn;
     private final Region region;
     private final Map<String, String> stsHeaderOverrides;
 
-    private AwsCredentialsOptions(Builder builder) {
+    private AwsCredentialsOptions(final Builder builder) {
         this.stsRoleArn = builder.stsRoleArn;
         this.region = builder.region;
         this.stsHeaderOverrides = builder.stsHeaderOverrides;
@@ -22,6 +23,18 @@ public class AwsCredentialsOptions {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    public Optional<String> getStsRoleArn() {
+        return Optional.of(stsRoleArn);
+    }
+
+    public Optional<Region> getRegion() {
+        return Optional.of(region);
+    }
+
+    public Map<String, String> getStsHeaderOverrides() {
+        return stsHeaderOverrides;
     }
 
     public static class Builder {

@@ -13,6 +13,7 @@ import org.opensearch.dataprepper.event.DefaultEventFactory;
 import org.opensearch.dataprepper.acknowledgements.DefaultAcknowledgementSetManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -29,6 +30,7 @@ import java.util.function.Function;
  * @since 1.2
  */
 @Named
+@DependsOn({"extensionsApplier"})
 public class DefaultPluginFactory implements PluginFactory {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPluginFactory.class);
 
