@@ -23,7 +23,6 @@ import static org.opensearch.dataprepper.model.annotations.DataPrepperPlugin.DEF
  * @since 1.2
  */
 public class ClasspathPluginProvider implements PluginProvider {
-
     private final Reflections reflections;
     private Map<String, Map<Class<?>, Class<?>>> nameToSupportedTypeToPluginType;
 
