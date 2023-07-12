@@ -15,8 +15,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+/**
+ * Testing utility for metrics.
+ *
+ * @deprecated Mock your metrics instead. If any parts of this remain, it will be moved into a testing package.
+ */
+@Deprecated(since = "2.4")
 public class MetricsTestUtil {
 
+    /**
+     * Initializes metrics with the global registry.
+     *
+     * @deprecated This uses a global registry and thus interferes with parallel testing. Use mocks instead.
+     */
+    @Deprecated(since = "2.4", forRemoval = true)
     public static void initMetrics() {
         Metrics.globalRegistry.getRegistries().forEach(meterRegistry -> Metrics.globalRegistry.remove(meterRegistry));
         Metrics.globalRegistry.getMeters().forEach(meter -> Metrics.globalRegistry.remove(meter));
