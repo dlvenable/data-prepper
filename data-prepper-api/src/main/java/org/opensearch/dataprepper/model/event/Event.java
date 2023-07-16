@@ -6,6 +6,7 @@
 package org.opensearch.dataprepper.model.event;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +53,8 @@ public interface Event extends Serializable {
      * @since 1.2
      */
     <T> List<T> getList(String key, Class<T> clazz);
+
+    Collection<String> keys();
 
     /**
      * Deletes the given key from the Event

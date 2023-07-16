@@ -1,0 +1,62 @@
+input:
+  type: object
+  properties:
+    version:
+      type: string
+      format: integer
+    account-id:
+      type: string
+    interface-id:
+      type: string
+    srcport:
+      type: string
+      format: integer
+    dstport:
+      type: string
+      format: integer
+    srcaddr:
+      type: string
+    dstaddr:
+      type: string
+    start:
+      type: string
+      format: epoch-seconds
+    end:
+      type: string
+      format: epoch-seconds
+
+output:
+  type: object
+  properties:
+    version:
+      type: integer
+    accountId:
+      type: string
+    interfaceId:
+      type: string
+    srcport:
+      type: integer
+    dstport:
+      type: integer
+    srcaddr:
+      type: string
+      format: ipaddr
+    dstaddr:
+      type: string
+      format: ipaddr
+    start:
+      type: string
+      format: date-time
+    end:
+      type: string
+      format: date-time
+
+rules:
+  - type: convert_to_null
+    null_marker: "-"
+    match_keys:
+      - version
+      - account-id
+      - interface-id
+      - srcport
+      - dstport

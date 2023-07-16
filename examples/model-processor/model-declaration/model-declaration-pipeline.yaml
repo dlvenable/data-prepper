@@ -1,0 +1,90 @@
+vpc-flow-log-pipeline:
+  source:
+    s3:
+      notification_type: sqs
+      compression: gzip
+      codec:
+        csv:
+          delimiter: ' '
+      sqs:
+        queue_url: "https://sqs.us-east-1.amazonaws.com/534869792916/SampleVpcFlowLogsStack-VpcFlowLogEventQueue21F99DA0-jGLtUCEZi6aI"
+      aws:
+        region: us-east-1
+        sts_role_arn: "arn:aws:iam::534869792916:role/DataPrepperAccessStack-DataPrepperRole3A704B84-1P7U2NIMURQB4"
+
+  processor:
+    - declarative_model:
+        input:
+          type: object
+          properties:
+            version:
+              type: string
+              format: integer
+            account-id:
+              type: string
+              format: integer
+            interface-id:
+              type: string
+              format: integer
+            srcport:
+              type: string
+              format: integer
+            dstport:
+              type: string
+              format: integer
+            srcaddr:
+              type: string
+            dstaddr:
+              type: string
+            start:
+              type: string
+              format: epoch-seconds
+            end:
+              type: string
+              format: epoch-seconds
+
+        output:
+          type: object
+          properties:
+            version:
+              type: integer
+            accountId:
+              type: string
+            interfaceId:
+              type: string
+            srcport:
+              type: integer
+            dstport:
+              type: integer
+            srcaddr:
+              type: string
+              format: ipaddr
+            dstaddr:
+              type: string
+              format: ipaddr
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+
+        rules:
+          - type: convert_to_null
+            null_marker: "-"
+            match_keys:
+              - version
+              - account-id
+              - interface-id
+              - srcport
+              - dstport
+
+
+  sink:
+    - opensearch:
+        hosts: ["https://opensearch:9200"]
+        insecure: true
+        username: "admin"
+        password: "admin"
+        index: vpc_flow_logs
+        template_file: /usr/share/data-prepper/vpc_flow_logs_template.json

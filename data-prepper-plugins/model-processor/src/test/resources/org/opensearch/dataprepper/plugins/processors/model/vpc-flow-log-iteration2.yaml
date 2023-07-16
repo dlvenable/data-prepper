@@ -1,0 +1,42 @@
+input:
+  type: object
+  properties:
+    version:
+      type: string
+      format: integer
+    account-id:
+      type: string
+      format: integer
+    interface-id:
+      type: string
+      format: integer
+    srcport:
+      type: string
+      format: integer
+    dstport:
+      type: string
+      format: integer
+
+output:
+  type: object
+  properties:
+    version:
+      type: integer
+    accountId:
+      type: string
+    interfaceId:
+      type: string
+    srcport:
+      type: integer
+    dstport:
+      type: integer
+
+rules:
+  - type: convert_to_null
+    null_marker: "-"
+    match_keys:
+      - version
+      - account-id
+      - interface-id
+      - srcport
+      - dstport

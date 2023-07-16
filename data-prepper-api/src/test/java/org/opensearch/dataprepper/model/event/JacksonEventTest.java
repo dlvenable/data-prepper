@@ -15,6 +15,7 @@ import org.opensearch.dataprepper.model.event.exceptions.EventKeyNotFoundExcepti
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -651,6 +653,23 @@ public class JacksonEventTest {
         final String expectedJsonString = "{\"foo\":\"bar\",\"tags\":[\"tag1\",\"tag2\"]}";
         assertThat(event.jsonBuilder().includeTags("tags").toJsonString(), equalTo(expectedJsonString));
         assertThat(event.jsonBuilder().toJsonString(), equalTo(jsonString));
+    }
+
+    @Test
+    void keys_returns_all_key_names() {
+        Map<String, String> data = new HashMap<>();
+        for(int i = 0; i < 5; i++) {
+            data.put(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        }
+        final JacksonEvent event = JacksonEvent.builder()
+                .withEventType(eventType)
+                .withData(data)
+                .build();
+
+        Collection<String> keys = event.keys();
+        assertThat(keys, notNullValue());
+        assertThat(keys.size(), equalTo(data.keySet().size()));
+        assertThat(keys, containsInAnyOrder(data.keySet().toArray()));
     }
 
     private static Map<String, Object> createComplexDataMap() {

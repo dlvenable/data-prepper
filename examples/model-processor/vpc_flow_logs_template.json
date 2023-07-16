@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "mappings": {
+    "_source": {
+      "enabled": true
+    },
+    "properties": {
+      "action": {
+        "ignore_above": 32,
+        "type": "keyword"
+      },
+      "log-status": {
+        "ignore_above": 32,
+        "type": "keyword"
+      },
+      "srcaddr": {
+        "type": "ip"
+      },
+      "dstaddr": {
+        "type": "ip"
+      },
+      "start": {
+        "type": "date",
+        "format" : "date_time_no_millis"
+      },
+      "end": {
+        "type": "date",
+        "format" : "date_time_no_millis"
+      }
+    }
+  }
+}

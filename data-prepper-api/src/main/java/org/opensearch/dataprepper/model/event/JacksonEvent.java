@@ -23,12 +23,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.StreamSupport;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -230,6 +234,15 @@ public class JacksonEvent implements Event {
         }
 
         return mapNodeToList(key, node, clazz);
+    }
+
+    @Override
+    public Collection<String> keys() {
+        Iterator<String> namesIterator = jsonNode.fieldNames();
+        List<String> keys = new ArrayList<>();
+        namesIterator.forEachRemaining(keys::add);
+
+        return keys;
     }
 
     private <T> List<T> mapNodeToList(final String key, final JsonNode node, final Class<T> clazz) {
