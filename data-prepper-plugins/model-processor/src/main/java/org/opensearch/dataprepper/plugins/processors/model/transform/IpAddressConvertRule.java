@@ -7,9 +7,6 @@ package org.opensearch.dataprepper.plugins.processors.model.transform;
 
 import org.opensearch.dataprepper.model.event.Event;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 public class IpAddressConvertRule implements Rule {
     private final String key;
 
@@ -27,11 +24,14 @@ public class IpAddressConvertRule implements Rule {
         String ipString = event.get(key, String.class);
 
         // Just validation
+        /*
         try {
             InetAddress.getByName(ipString);
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
+
+         */
 
     }
 }

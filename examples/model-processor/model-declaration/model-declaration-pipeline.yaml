@@ -42,6 +42,14 @@ vpc-flow-log-pipeline:
             end:
               type: string
               format: epoch-seconds
+            protocol:
+              type: string
+            packets:
+              type: string
+              format: integer
+            bytes:
+              type: string
+              format: integer
 
         output:
           type: object
@@ -68,6 +76,12 @@ vpc-flow-log-pipeline:
             end:
               type: string
               format: date-time
+            protocol:
+              type: string
+            packets:
+              type: integer
+            bytes:
+              type: integer
 
         rules:
           - type: convert_to_null
@@ -78,6 +92,13 @@ vpc-flow-log-pipeline:
               - interface-id
               - srcport
               - dstport
+              - srcaddr
+              - dstaddr
+              - start
+              - end
+              - protocol
+              - bytes
+              - packets
 
 
   sink:
