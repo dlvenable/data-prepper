@@ -22,10 +22,8 @@ vpc-flow-log-pipeline:
               format: integer
             account-id:
               type: string
-              format: integer
             interface-id:
               type: string
-              format: integer
             srcport:
               type: string
               format: integer
