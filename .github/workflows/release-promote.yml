@@ -3,9 +3,6 @@ name: Promote Release Artifacts
 on:
   workflow_dispatch:
     inputs:
-      #version:
-      #  description: 'The version of Data Prepper'
-      #  required: true
       build-number:
         description: 'The build number of the Data Prepper build from GitHub to release.'
         required: true
@@ -25,28 +22,40 @@ jobs:
 
   protomote:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
 
     steps:
       - name: Checkout Data Prepper
         uses: actions/checkout@v3
       - name: Get Version
         run:  grep '^version=' gradle.properties >> $GITHUB_ENV
-      - id: get_data
+
+      - name: Get Approvers
+        id: get_approvers
         run: |
           echo "approvers=$(cat .github/CODEOWNERS | grep @ | tr -d '* ' | sed 's/@/,/g' | sed 's/,//1')" >> $GITHUB_OUTPUT
       - uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
-          approvers: ${{ steps.get_data.outputs.approvers }}
+          approvers: ${{ steps.get_approvers.outputs.approvers }}
+          # TODO: should be 2
           minimum-approvals: 1
           issue-title: 'Release Data Prepper : ${{ env.version }}'
           issue-body: >
             Please approve or deny the release of Data Prepper.
+            
             **VERSION**: ${{ env.version }}
-            **BUILD NUMBER**: ${{ github.event.inputs.build-number }} 
+            
+            **BUILD NUMBER**: ${{ github.event.inputs.build-number }}
+            
             **RELEASE MAJOR TAG**: ${{ github.event.inputs.release-major-tag }}
+            
             **RELEASE LATEST TAG**: ${{ github.event.inputs.release-latest-tag }}
-          exclude-workflow-initiator-as-approver: true
+
+          # TODO: May need to make this true
+          exclude-workflow-initiator-as-approver: false
 
       - name: Create Release Description
         run: |
@@ -71,6 +80,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           draft: true
-          tag_name: 'refs/tags/${{ env.version }}'
+          tag_name: '${{ env.version }}'
           files: |
             release-description.yaml
