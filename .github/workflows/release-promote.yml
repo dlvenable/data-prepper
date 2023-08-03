@@ -48,7 +48,7 @@ jobs:
             
             **VERSION**: ${{ env.version }}
             
-            **BUILD NUMBER**: ${{ github.run-number }}
+            **BUILD NUMBER**: ${{ github.run_number }}
             
             **RELEASE MAJOR TAG**: ${{ github.event.inputs.release-major-tag }}
             
@@ -60,7 +60,7 @@ jobs:
       - name: Create Release Description
         run: |
           echo 'version: ${{ env.version }}' > release-description.yaml
-          echo 'build_number: ${{ github.run-number }}' >> release-description.yaml
+          echo 'build_number: ${{ github.run_number }}' >> release-description.yaml
           echo 'release_major_tag: ${{ github.event.inputs.release-major-tag }}' >> release-description.yaml
           echo 'release_latest_tag: ${{ github.event.inputs.release-latest-tag }}' >> release-description.yaml
 
