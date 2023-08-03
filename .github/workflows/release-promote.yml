@@ -3,9 +3,9 @@ name: Promote Release Artifacts
 on:
   workflow_dispatch:
     inputs:
-      build-number:
-        description: 'The build number of the Data Prepper build from GitHub to release.'
-        required: true
+      #build-number:
+      #  description: 'The build number of the Data Prepper build from GitHub to release.'
+      #  required: true
       release-major-tag:
         description: 'Whether to create major tag of docker image or not. This will create a tag such as 2.3 which points to this version.'
         required: true
@@ -48,7 +48,7 @@ jobs:
             
             **VERSION**: ${{ env.version }}
             
-            **BUILD NUMBER**: ${{ github.event.inputs.build-number }}
+            **BUILD NUMBER**: ${{ github.run-number }}
             
             **RELEASE MAJOR TAG**: ${{ github.event.inputs.release-major-tag }}
             
@@ -60,7 +60,7 @@ jobs:
       - name: Create Release Description
         run: |
           echo 'version: ${{ env.version }}' > release-description.yaml
-          echo 'build_number: ${{ github.event.inputs.build-number }}' >> release-description.yaml
+          echo 'build_number: ${{ github.run-number }}' >> release-description.yaml
           echo 'release_major_tag: ${{ github.event.inputs.release-major-tag }}' >> release-description.yaml
           echo 'release_latest_tag: ${{ github.event.inputs.release-latest-tag }}' >> release-description.yaml
 
