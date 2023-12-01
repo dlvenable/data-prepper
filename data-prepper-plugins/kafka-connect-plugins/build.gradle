@@ -40,7 +40,7 @@ dependencies {
     // Debezium Postgres connector
     implementation 'io.debezium:debezium-connector-postgres:2.3.0.Final'
     implementation 'org.postgresql:postgresql:42.5.1'
-    implementation 'com.google.protobuf:protobuf-java:3.19.6'
+    implementation 'com.google.protobuf:protobuf-java:3.25.1'
     // Debezium Mongodb connector
     implementation 'io.debezium:debezium-connector-mongodb:2.3.0.Final'
     implementation 'org.mongodb:mongodb-driver-core:4.7.1'
