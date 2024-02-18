@@ -44,6 +44,9 @@ public class DataPrepperServerTest {
     private ShutdownHandler shutdownHandler;
 
     @Mock
+    private ForcedCircuitBreakerHandler forcedCircuitBreakerHandler;
+
+    @Mock
     private PrometheusMeterRegistry prometheusMeterRegistry;
 
     @Mock
@@ -147,6 +150,6 @@ public class DataPrepperServerTest {
     }
 
     private DataPrepperServer createObjectUnderTest(final PrometheusMeterRegistry prometheusMeterRegistry, final Authenticator authenticator) {
-        return new DataPrepperServer(httpServerProvider, listPipelinesHandler, shutdownHandler, prometheusMeterRegistry, authenticator);
+        return new DataPrepperServer(httpServerProvider, listPipelinesHandler, shutdownHandler, forcedCircuitBreakerHandler, prometheusMeterRegistry, authenticator);
     }
 }

@@ -3,16 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.dataprepper.pipeline.server.config;
+package org.opensearch.dataprepper.pipeline.server;
 
 import org.opensearch.dataprepper.DataPrepper;
+import org.opensearch.dataprepper.breaker.ForcedCircuitBreakerProvider;
 import org.opensearch.dataprepper.model.configuration.PluginModel;
 import org.opensearch.dataprepper.model.configuration.PluginSetting;
 import org.opensearch.dataprepper.model.plugin.PluginFactory;
 import org.opensearch.dataprepper.pipeline.PipelinesProvider;
-import org.opensearch.dataprepper.pipeline.server.DataPrepperCoreAuthenticationProvider;
-import org.opensearch.dataprepper.pipeline.server.ListPipelinesHandler;
-import org.opensearch.dataprepper.pipeline.server.ShutdownHandler;
 import com.sun.net.httpserver.Authenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,5 +71,10 @@ public class DataPrepperServerConfiguration {
     @Bean
     public ShutdownHandler shutdownHandler(final DataPrepper dataPrepper) {
         return new ShutdownHandler(dataPrepper);
+    }
+
+    @Bean
+    ForcedCircuitBreakerHandler forcedCircuitBreakerHandler(ForcedCircuitBreakerProvider forcedCircuitBreakerProvider) {
+        return new ForcedCircuitBreakerHandler(forcedCircuitBreakerProvider);
     }
 }

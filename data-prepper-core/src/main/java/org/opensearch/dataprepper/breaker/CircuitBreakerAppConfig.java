@@ -10,6 +10,7 @@ import org.opensearch.dataprepper.parser.model.CircuitBreakerConfig;
 import org.opensearch.dataprepper.parser.model.DataPrepperConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,12 @@ public class CircuitBreakerAppConfig {
     }
 
     @Bean
+    InnerCircuitBreaker forcedCircuitBreaker() {
+        return new ForcedCircuitBreaker();
+    }
+
+    @Bean
+    @Primary
     public Optional<CircuitBreaker> circuitBreaker(final CircuitBreakerManager circuitBreakerManager) {
         return circuitBreakerManager.getGlobalCircuitBreaker();
     }

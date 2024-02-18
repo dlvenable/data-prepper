@@ -31,6 +31,7 @@ public class DataPrepperServer {
     private final HttpServerProvider serverProvider;
     private final ListPipelinesHandler listPipelinesHandler;
     private final ShutdownHandler shutdownHandler;
+    private final ForcedCircuitBreakerHandler forcedCircuitBreakerHandler;
     private final PrometheusMeterRegistry prometheusMeterRegistry;
     private final Authenticator authenticator;
     private HttpServer server;
@@ -41,12 +42,14 @@ public class DataPrepperServer {
             final HttpServerProvider serverProvider,
             final ListPipelinesHandler listPipelinesHandler,
             final ShutdownHandler shutdownHandler,
+            final ForcedCircuitBreakerHandler forcedCircuitBreakerHandler,
             @Autowired(required = false) @Nullable final PrometheusMeterRegistry prometheusMeterRegistry,
             @Autowired(required = false) @Nullable final Authenticator authenticator
     ) {
         this.serverProvider = serverProvider;
         this.listPipelinesHandler = listPipelinesHandler;
         this.shutdownHandler = shutdownHandler;
+        this.forcedCircuitBreakerHandler = forcedCircuitBreakerHandler;
         this.prometheusMeterRegistry = prometheusMeterRegistry;
         this.authenticator = authenticator;
     }
@@ -66,6 +69,7 @@ public class DataPrepperServer {
 
         createContext(server, listPipelinesHandler, authenticator, "/list");
         createContext(server, shutdownHandler, authenticator, "/shutdown");
+        createContext(server, forcedCircuitBreakerHandler, authenticator, "/circuit_breaker/forced");
 
         if (prometheusMeterRegistry != null) {
             final PrometheusMetricsHandler prometheusMetricsHandler = new PrometheusMetricsHandler(prometheusMeterRegistry);

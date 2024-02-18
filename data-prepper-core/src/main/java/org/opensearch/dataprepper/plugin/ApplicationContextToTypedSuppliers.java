@@ -5,6 +5,7 @@
 
 package org.opensearch.dataprepper.plugin;
 
+import org.opensearch.dataprepper.breaker.CircuitBreakerManager;
 import org.opensearch.dataprepper.model.acknowledgements.AcknowledgementSetManager;
 import org.opensearch.dataprepper.model.breaker.CircuitBreaker;
 import org.opensearch.dataprepper.model.event.EventFactory;
@@ -32,7 +33,7 @@ class ApplicationContextToTypedSuppliers {
     ApplicationContextToTypedSuppliers(
             final EventFactory eventFactory,
             final AcknowledgementSetManager acknowledgementSetManager,
-            @Autowired(required = false) final CircuitBreaker circuitBreaker
+            @Autowired(required = false) final CircuitBreakerManager circuitBreakerManager
     ) {
         Objects.requireNonNull(eventFactory);
         Objects.requireNonNull(acknowledgementSetManager);
@@ -40,7 +41,7 @@ class ApplicationContextToTypedSuppliers {
         typedSuppliers = Map.of(
                 EventFactory.class, () -> eventFactory,
                 AcknowledgementSetManager.class, () -> acknowledgementSetManager,
-                CircuitBreaker.class, () -> circuitBreaker
+                CircuitBreaker.class, () -> circuitBreakerManager.getGlobalCircuitBreaker().orElse(null)
         );
     }
 
