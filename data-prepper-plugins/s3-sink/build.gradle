@@ -19,7 +19,10 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'
     implementation project(':data-prepper-plugins:avro-codecs')
     implementation libs.avro.core
-    implementation libs.hadoop.common
+    implementation(libs.hadoop.common) {
+        exclude group: 'org.apache.hadoop', module: 'hadoop-auth'
+        exclude group: 'org.apache.zookeeper', module: 'zookeeper'
+    }
     implementation 'org.apache.parquet:parquet-avro:1.13.1'
     implementation 'software.amazon.awssdk:apache-client'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-common:1.9.22'
@@ -29,6 +32,7 @@ dependencies {
     testImplementation project(':data-prepper-plugins:parse-json-processor')
     testImplementation project(':data-prepper-plugins:csv-processor')
     testImplementation testLibs.slf4j.simple
+    testImplementation 'org.apache.hadoop:hadoop-auth:3.3.6'
     testImplementation 'software.amazon.awssdk:s3-transfer-manager'
     testImplementation 'software.amazon.awssdk.crt:aws-crt:0.25.0'
 
