@@ -5,9 +5,11 @@
 
 package org.opensearch.dataprepper.plugins.processor.mutateevent;
 
+import org.opensearch.dataprepper.event.TestEventKeyFactory;
 import org.opensearch.dataprepper.expression.ExpressionEvaluator;
 import org.opensearch.dataprepper.metrics.PluginMetrics;
 import org.opensearch.dataprepper.model.event.Event;
+import org.opensearch.dataprepper.model.event.EventKeyFactory;
 import org.opensearch.dataprepper.model.event.JacksonEvent;
 import org.opensearch.dataprepper.model.record.Record;
 import org.junit.jupiter.api.Test;
@@ -38,6 +40,8 @@ public class RenameKeyProcessorTests {
 
     @Mock
     private ExpressionEvaluator expressionEvaluator;
+
+    private final EventKeyFactory eventKeyFactory = TestEventKeyFactory.getTestEventFactory();
 
     @Test
     public void testSingleOverwriteRenameProcessorTests() {
@@ -132,7 +136,7 @@ public class RenameKeyProcessorTests {
     }
 
     private RenameKeyProcessor createObjectUnderTest() {
-        return new RenameKeyProcessor(pluginMetrics, mockConfig, expressionEvaluator);
+        return new RenameKeyProcessor(mockConfig, eventKeyFactory, expressionEvaluator, pluginMetrics);
     }
 
     private RenameKeyProcessorConfig.Entry createEntry(final String fromKey, final String toKey, final boolean overwriteIfToKeyExists, final String renameWhen) {
