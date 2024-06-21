@@ -3,28 +3,30 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.dataprepper.expression;
+package org.opensearch.dataprepper.event_language;
 
-import org.opensearch.dataprepper.model.event.Event;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.opensearch.dataprepper.expression.antlr.DataPrepperExpressionParser;
+import org.opensearch.dataprepper.expression.ExpressionCoercionException;
+import org.opensearch.dataprepper.expression.ExpressionFunctionProvider;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperEventLanguageParser;
+import org.opensearch.dataprepper.model.event.Event;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.util.Map;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 @Named
-public class ParseTreeCoercionService {
+public class ELParseTreeCoercionService {
     private final Map<Class<? extends Serializable>, Function<Object, Object>> literalTypeConversions;
     private ExpressionFunctionProvider expressionFunctionProvider;
     private Function<Object, Object> convertLiteralType;
 
     @Inject
-    public ParseTreeCoercionService(final Map<Class<? extends Serializable>, Function<Object, Object>> literalTypeConversions, ExpressionFunctionProvider expressionFunctionProvider) {
+    public ELParseTreeCoercionService(final Map<Class<? extends Serializable>, Function<Object, Object>> literalTypeConversions, ExpressionFunctionProvider expressionFunctionProvider) {
         this.literalTypeConversions = literalTypeConversions;
         convertLiteralType = (value) -> {
                 if (literalTypeConversions.containsKey(value.getClass())) {
@@ -40,7 +42,7 @@ public class ParseTreeCoercionService {
         final int nodeType = node.getSymbol().getType();
         final String nodeStringValue = node.getText();
         switch (nodeType) {
-            case DataPrepperExpressionParser.Function:
+            case DataPrepperEventLanguageParser.Function:
                 final int funcNameIndex = nodeStringValue.indexOf("(");
                 final String functionName = nodeStringValue.substring(0, funcNameIndex);
                 final int argsEndIndex = nodeStringValue.indexOf(")", funcNameIndex);
@@ -62,32 +64,34 @@ public class ParseTreeCoercionService {
                     }
                 }
                 return expressionFunctionProvider.provideFunction(functionName, argList, event, convertLiteralType);
-            case DataPrepperExpressionParser.EscapedJsonPointer:
+            case DataPrepperEventLanguageParser.EscapedJsonPointer:
                 final String jsonPointerWithoutQuotes = nodeStringValue.substring(1, nodeStringValue.length() - 1);
                 return resolveJsonPointerValue(jsonPointerWithoutQuotes, event);
-            case DataPrepperExpressionParser.JsonPointer:
+            case DataPrepperEventLanguageParser.JsonPointer:
                 return resolveJsonPointerValue(nodeStringValue, event);
-            case DataPrepperExpressionParser.String:
+            case DataPrepperEventLanguageParser.String:
                 final String nodeStringValueWithQuotesStripped = nodeStringValue.substring(1, nodeStringValue.length() - 1);
                 return nodeStringValueWithQuotesStripped;
-            case DataPrepperExpressionParser.Integer:
+            case DataPrepperEventLanguageParser.Integer:
                 Long longValue = Long.valueOf(nodeStringValue);
                 if (longValue > Integer.MAX_VALUE || longValue < Integer.MIN_VALUE) {
                     return longValue;
                 }
                 return Integer.valueOf(nodeStringValue);
-            case DataPrepperExpressionParser.Float:
+            case DataPrepperEventLanguageParser.Float:
                 return Float.valueOf(nodeStringValue);
-            case DataPrepperExpressionParser.Boolean:
+            case DataPrepperEventLanguageParser.Boolean:
                 return Boolean.valueOf(nodeStringValue);
-            case DataPrepperExpressionParser.Null:
+            case DataPrepperEventLanguageParser.Null:
                 return null;
-            case DataPrepperExpressionParser.DataTypes:
+            case DataPrepperEventLanguageParser.DataTypes:
                 return nodeStringValue;
+            case DataPrepperEventLanguageParser.STATEMENT_END:
+                return null;
 
             default:
                 throw new ExpressionCoercionException("Unsupported terminal node type symbol string: " +
-                        DataPrepperExpressionParser.VOCABULARY.getDisplayName(nodeType));
+                        DataPrepperEventLanguageParser.VOCABULARY.getDisplayName(nodeType));
         }
     }
 
@@ -99,10 +103,14 @@ public class ParseTreeCoercionService {
     }
 
     private Object resolveJsonPointerValue(final String jsonPointer, final Event event) {
+        return jsonPointer;
+        /*
         final Object value = event.get(jsonPointer, Object.class);
         if (value == null) {
             return null;
         } 
         return convertLiteralType.apply(value);
+
+         */
     }
 }

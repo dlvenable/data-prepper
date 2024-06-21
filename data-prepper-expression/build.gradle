@@ -34,6 +34,7 @@ dependencies {
     testImplementation testLibs.spring.test
     testImplementation libs.commons.lang3
     testImplementation 'com.fasterxml.jackson.core:jackson-databind'
+    testImplementation project(':data-prepper-test-event')
 }
 
 generateGrammarSource {

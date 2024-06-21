@@ -451,4 +451,9 @@ class OperatorConfiguration {
 
         return new ArithmeticBinaryOperator(DataPrepperExpressionParser.DIVIDE, operandsToOperationMap);
     }
+
+    @Bean
+    public AssignmentOperator assignmentOperator() {
+        return new AssignmentOperator();
+    }
 }

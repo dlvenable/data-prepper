@@ -21,7 +21,7 @@ import java.util.List;
  *
  * Handles any syntaxError events that occur during parsing. All exceptions are tracked and available after parsing is complete.
  */
-class ParserErrorListener implements ANTLRErrorListener {
+public class ParserErrorListener implements ANTLRErrorListener {
     private final List<Throwable> exceptions = new ArrayList<>();
 
     /**

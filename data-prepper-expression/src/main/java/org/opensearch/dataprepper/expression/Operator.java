@@ -7,7 +7,7 @@ package org.opensearch.dataprepper.expression;
 
 import org.antlr.v4.runtime.RuleContext;
 
-interface Operator<T> {
+public interface Operator<T> {
     default int getNumberOfOperands(final RuleContext ctx) {
         return 2;
     }

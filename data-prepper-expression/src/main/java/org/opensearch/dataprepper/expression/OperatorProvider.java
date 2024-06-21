@@ -15,7 +15,7 @@ import java.util.Objects;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Named
-class OperatorProvider {
+public class OperatorProvider {
     private final Map<Integer, Operator<?>> symbolToOperators;
 
     @Inject
