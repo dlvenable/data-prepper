@@ -17,6 +17,7 @@ import org.opensearch.dataprepper.expression.antlr.DataPrepperEventLanguageBaseL
 import org.opensearch.dataprepper.expression.antlr.DataPrepperEventLanguageListener;
 import org.opensearch.dataprepper.expression.antlr.DataPrepperEventLanguageParser;
 import org.opensearch.dataprepper.model.event.Event;
+import org.opensearch.dataprepper.model.event.EventKey;
 
 import java.util.Stack;
 
@@ -125,8 +126,11 @@ class ELParseTreeEvaluatorListener extends DataPrepperEventLanguageBaseListener 
 
             @Override
             public Void evaluate(Object... args) {
-                String leftHand = (String) args[0];
+                EventKey leftHand = (EventKey) args[0];
                 Object assignment = args[1];
+                if(assignment instanceof EventKey) {
+                    assignment = event.get((EventKey) assignment, Object.class);
+                }
                 event.put(leftHand, assignment);
                 return null;
             }

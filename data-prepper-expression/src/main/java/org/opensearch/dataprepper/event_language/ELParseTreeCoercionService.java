@@ -10,6 +10,7 @@ import org.opensearch.dataprepper.expression.ExpressionCoercionException;
 import org.opensearch.dataprepper.expression.ExpressionFunctionProvider;
 import org.opensearch.dataprepper.expression.antlr.DataPrepperEventLanguageParser;
 import org.opensearch.dataprepper.model.event.Event;
+import org.opensearch.dataprepper.model.event.EventKeyFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -23,10 +24,14 @@ import java.util.function.Function;
 public class ELParseTreeCoercionService {
     private final Map<Class<? extends Serializable>, Function<Object, Object>> literalTypeConversions;
     private ExpressionFunctionProvider expressionFunctionProvider;
+    private final EventKeyFactory eventKeyFactory;
     private Function<Object, Object> convertLiteralType;
 
     @Inject
-    public ELParseTreeCoercionService(final Map<Class<? extends Serializable>, Function<Object, Object>> literalTypeConversions, ExpressionFunctionProvider expressionFunctionProvider) {
+    public ELParseTreeCoercionService(
+            final Map<Class<? extends Serializable>, Function<Object, Object>> literalTypeConversions,
+            final ExpressionFunctionProvider expressionFunctionProvider,
+            final EventKeyFactory eventKeyFactory) {
         this.literalTypeConversions = literalTypeConversions;
         convertLiteralType = (value) -> {
                 if (literalTypeConversions.containsKey(value.getClass())) {
@@ -36,6 +41,7 @@ public class ELParseTreeCoercionService {
                 }
             };
         this.expressionFunctionProvider = expressionFunctionProvider;
+        this.eventKeyFactory = eventKeyFactory;
     }
 
     public Object coercePrimaryTerminalNode(final TerminalNode node, final Event event) {
@@ -103,7 +109,7 @@ public class ELParseTreeCoercionService {
     }
 
     private Object resolveJsonPointerValue(final String jsonPointer, final Event event) {
-        return jsonPointer;
+        return eventKeyFactory.createEventKey(jsonPointer);
         /*
         final Object value = event.get(jsonPointer, Object.class);
         if (value == null) {

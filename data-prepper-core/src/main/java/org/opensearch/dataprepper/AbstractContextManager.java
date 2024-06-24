@@ -5,6 +5,7 @@
 
 package org.opensearch.dataprepper;
 
+import org.opensearch.dataprepper.core.event.DefaultEventKeyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -50,6 +51,7 @@ public abstract class AbstractContextManager {
 
     private void start() {
         publicApplicationContext.scan(EXPRESSION_PACKAGE);
+        publicApplicationContext.register(DefaultEventKeyFactory.class);
         publicApplicationContext.scan(EVENT_LANGUAGE_PACKAGE);
         preRefreshPublicApplicationContext(publicApplicationContext);
 
