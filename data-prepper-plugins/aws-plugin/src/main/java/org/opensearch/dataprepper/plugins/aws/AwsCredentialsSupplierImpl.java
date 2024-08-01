@@ -12,17 +12,19 @@ import software.amazon.awssdk.regions.Region;
 
 import java.util.Optional;
 
-class DefaultAwsCredentialsSupplier implements AwsCredentialsSupplier {
+class AwsCredentialsSupplierImpl implements AwsCredentialsSupplier {
     private final CredentialsProviderFactory credentialsProviderFactory;
     private final CredentialsCache credentialsCache;
 
-    DefaultAwsCredentialsSupplier(final CredentialsProviderFactory credentialsProviderFactory, final CredentialsCache credentialsCache) {
+    AwsCredentialsSupplierImpl(final CredentialsProviderFactory credentialsProviderFactory, final CredentialsCache credentialsCache) {
         this.credentialsProviderFactory = credentialsProviderFactory;
         this.credentialsCache = credentialsCache;
     }
 
     @Override
     public AwsCredentialsProvider getProvider(final AwsCredentialsOptions options) {
+
+        // options.configuration==osis_internal
         return credentialsCache.getOrCreate(options, () -> credentialsProviderFactory.providerFromOptions(options));
     }
 

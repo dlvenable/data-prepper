@@ -37,8 +37,10 @@ class CredentialsProviderFactory {
     static final long STS_CLIENT_MAX_BACKOFF_MILLIS = 60000L;
 
     private final AwsStsConfiguration defaultStsConfiguration;
+    private final Map<String, AwsStsConfiguration> configurationMap;
 
-    public CredentialsProviderFactory(final AwsStsConfiguration defaultStsConfiguration) {
+    public CredentialsProviderFactory(final AwsStsConfiguration defaultStsConfiguration, Map<String, AwsStsConfiguration> configurationMap) {
+        this.configurationMap = configurationMap;
         Objects.requireNonNull(defaultStsConfiguration);
         this.defaultStsConfiguration = defaultStsConfiguration;
     }
@@ -49,6 +51,13 @@ class CredentialsProviderFactory {
 
     AwsCredentialsProvider providerFromOptions(final AwsCredentialsOptions credentialsOptions) {
         Objects.requireNonNull(credentialsOptions);
+
+        if(credentialsOptions.getConfiguration() != null) { // configuration === osis_internal
+            AwsStsConfiguration awsStsConfiguration = configurationMap.get(credentialsOptions.getConfiguration());
+            AwsCredentialsOptions credentialsOptions1 = convertStsConfigurationToAwsCredentialsOptions(awsStsConfiguration);
+            return createStsCredentials(credentialsOptions1);
+
+        }
 
         if(credentialsOptions.getStsRoleArn() != null || defaultStsConfiguration.getAwsStsRoleArn() != null) {
             return createStsCredentials(credentialsOptions);

@@ -17,6 +17,7 @@ import java.util.Objects;
  * is distinct from the external model.
  */
 class CredentialsIdentifier {
+    private final String configuration;
     private final String stsRoleArn;
     private final Region region;
     private final Map<String, String> stsHeaderOverrides;

@@ -16,7 +16,7 @@ import org.opensearch.dataprepper.model.plugin.ExtensionPoints;
  */
 @DataPrepperExtensionPlugin(modelType = AwsPluginConfig.class, rootKeyJsonPath = "/aws/configurations")
 public class AwsPlugin implements ExtensionPlugin {
-    private final DefaultAwsCredentialsSupplier defaultAwsCredentialsSupplier;
+    private final AwsCredentialsSupplierImpl defaultAwsCredentialsSupplier;
 
     private final AwsPluginConfig awsPluginConfig;
 
@@ -27,7 +27,7 @@ public class AwsPlugin implements ExtensionPlugin {
 
         final CredentialsProviderFactory credentialsProviderFactory = new CredentialsProviderFactory(awsPluginConfig != null ? awsPluginConfig.getDefaultStsConfiguration() : new AwsStsConfiguration());
         final CredentialsCache credentialsCache = new CredentialsCache();
-        defaultAwsCredentialsSupplier = new DefaultAwsCredentialsSupplier(credentialsProviderFactory, credentialsCache);
+        defaultAwsCredentialsSupplier = new AwsCredentialsSupplierImpl(credentialsProviderFactory, credentialsCache);
     }
 
     @Override

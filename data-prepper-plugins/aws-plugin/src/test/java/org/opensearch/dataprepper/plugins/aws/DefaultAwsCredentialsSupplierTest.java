@@ -37,8 +37,8 @@ class DefaultAwsCredentialsSupplierTest {
     @Mock
     private CredentialsCache credentialsCache;
 
-    private DefaultAwsCredentialsSupplier createObjectUnderTest() {
-        return new DefaultAwsCredentialsSupplier(credentialsProviderFactory, credentialsCache);
+    private AwsCredentialsSupplierImpl createObjectUnderTest() {
+        return new AwsCredentialsSupplierImpl(credentialsProviderFactory, credentialsCache);
     }
 
     @Test

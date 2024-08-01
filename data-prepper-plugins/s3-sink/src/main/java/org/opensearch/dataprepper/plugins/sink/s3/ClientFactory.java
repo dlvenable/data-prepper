@@ -46,6 +46,7 @@ public final class ClientFactory {
 
     private static AwsCredentialsOptions convertToCredentialsOptions(final AwsAuthenticationOptions awsAuthenticationOptions) {
         return AwsCredentialsOptions.builder()
+                .withConfiguration(awsAuthenticationOptions.getConfiguration())
             .withRegion(awsAuthenticationOptions.getAwsRegion())
             .withStsRoleArn(awsAuthenticationOptions.getAwsStsRoleArn())
             .withStsExternalId(awsAuthenticationOptions.getAwsStsExternalId())

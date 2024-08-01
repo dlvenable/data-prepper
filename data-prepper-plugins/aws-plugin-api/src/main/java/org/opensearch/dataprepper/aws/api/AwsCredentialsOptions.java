@@ -16,6 +16,7 @@ import java.util.Map;
  */
 public class AwsCredentialsOptions {
     private static final AwsCredentialsOptions DEFAULT_OPTIONS = new AwsCredentialsOptions();
+    private final String configuration;
     private final String stsRoleArn;
     private final String stsExternalId;
     private final Region region;
@@ -63,6 +64,10 @@ public class AwsCredentialsOptions {
 
     public Map<String, String> getStsHeaderOverrides() {
         return stsHeaderOverrides;
+    }
+
+    public String getConfiguration() {
+        return configuration;
     }
 
     /**

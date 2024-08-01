@@ -7,6 +7,7 @@ package org.opensearch.dataprepper.plugins.aws;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Size;
+import org.opensearch.dataprepper.aws.api.AwsCredentialsOptions;
 import software.amazon.awssdk.regions.Region;
 
 public class AwsStsConfiguration {
