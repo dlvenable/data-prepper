@@ -19,6 +19,7 @@ import org.opensearch.dataprepper.plugins.source.dynamodb.model.TableInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.document.EnhancedDocument;
+import software.amazon.awssdk.enhanced.dynamodb.internal.converter.attribute.JsonItemAttributeConverter;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.OperationType;
 import software.amazon.awssdk.services.dynamodb.model.Record;
@@ -28,6 +29,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class StreamRecordConverter extends RecordConverter {
     private static final Logger LOG = LoggerFactory.getLogger(StreamRecordConverter.class);
@@ -87,6 +89,7 @@ public class StreamRecordConverter extends RecordConverter {
 
                 // NewImage may be empty
                 data = convertData(streamRecord);
+                System.out.println(data);
                 // Always get keys from dynamodb().keys()
                 keys = convertKeys(record.dynamodb().keys());
             } catch (final Exception e) {
@@ -122,8 +125,39 @@ public class StreamRecordConverter extends RecordConverter {
      * Convert the DynamoDB attribute map to a normal map for data
      */
     private Map<String, Object> convertData(Map<String, AttributeValue> data) throws JsonProcessingException {
+
+        Map<String, Object> result = new HashMap<>();
+        // The attribute type for key can only be N, B or S
+        data.forEach(((attributeName, attributeValue) -> {
+            if (attributeValue.type() == AttributeValue.Type.N) {
+                // N for number
+                result.put(attributeName, attributeValue.n());
+            } else if (attributeValue.type() == AttributeValue.Type.B) {
+                // B for Binary
+                result.put(attributeName, attributeValue.b().toString());
+            } else {
+                result.put(attributeName, attributeValue.s());
+            }
+        }));
+        return result;
+
+
+        /*
+        JsonItemAttributeConverter jsonItemAttributeConverter = JsonItemAttributeConverter.create();
+        data.entrySet().stream()
+                .collect(Collectors.toMap(entry -> entry.getKey(),
+                        entry -> jsonItemAttributeConverter.transformTo(entry.getValue())))
+                ;
+
+         */
+
+        /*
+
         String jsonData = EnhancedDocument.fromAttributeValueMap(data).toJson();
+        System.out.println(jsonData);
         return MAPPER.readValue(jsonData, MAP_TYPE_REFERENCE);
+
+         */
     }
 
     /**
