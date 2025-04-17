@@ -17,13 +17,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public interface OutputCodec {
 
     static final ObjectMapper objectMapper = new ObjectMapper();
 
+    interface WriteContext {
+        long getEstimatedSize();
+    }
+
     interface Writer {
         void writeEvent(Event event) throws IOException;
+        void writeEvent(final Event event, final Predicate<WriteContext> writeIf) throws IOException;
         void complete() throws IOException;
     }
 
@@ -34,6 +40,11 @@ public interface OutputCodec {
             @Override
             public void writeEvent(final Event event) throws IOException {
                 codec.writeEvent(event, outputStream);
+            }
+
+            @Override
+            public void writeEvent(final Event event, final Predicate<WriteContext> writeIf) throws IOException {
+                throw new UnsupportedOperationException("Writing with predicate is not supported");
             }
 
             @Override

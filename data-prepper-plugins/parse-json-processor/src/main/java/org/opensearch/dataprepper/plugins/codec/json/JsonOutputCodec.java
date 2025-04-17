@@ -15,11 +15,13 @@ import org.opensearch.dataprepper.model.codec.OutputCodec;
 import org.opensearch.dataprepper.model.event.Event;
 import org.opensearch.dataprepper.model.sink.OutputCodecContext;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -40,18 +42,125 @@ public class JsonOutputCodec implements OutputCodec {
         this.config = config;
     }
 
+    private class TransactionalOutputStream extends OutputStream {
+        private final OutputStream delegatedOutputStream;
+        private ByteArrayOutputStream buffer;
+        private boolean inTransaction = false;
+        private boolean closed = false;
+
+        public TransactionalOutputStream(final OutputStream delegatedOutputStream) {
+            this.delegatedOutputStream = delegatedOutputStream;
+        }
+
+        /**
+         * Begins a new transaction.
+         */
+        public void transaction() {
+            checkClosed();
+            if (inTransaction) {
+                throw new IllegalStateException("Transaction already in progress");
+            }
+            buffer = new ByteArrayOutputStream();
+            inTransaction = true;
+            buffer.reset();
+        }
+
+        /**
+         * Commits the current transaction and flushes the buffer to the destination stream.
+         */
+        public void commit() throws IOException {
+            checkClosed();
+            ensureTransaction();
+            buffer.writeTo(delegatedOutputStream);
+            endTransaction();
+        }
+
+        /**
+         * Rolls back the current transaction.
+         */
+        public void rollback() {
+            checkClosed();
+            ensureTransaction();
+            endTransaction();
+        }
+
+        /**
+         * Writes data to the buffer if a transaction is in progress.
+         */
+        @Override
+        public void write(int b) throws IOException {
+            checkClosed();
+            ensureTransaction();
+            buffer.write(b);
+        }
+
+        @Override
+        public void write(byte[] b, int off, int len) throws IOException {
+            checkClosed();
+            ensureTransaction();
+            buffer.write(b, off, len);
+        }
+
+        @Override
+        public void flush() throws IOException {
+            checkClosed();
+            if (!inTransaction) {
+                delegatedOutputStream.flush();
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            closed = true;
+            buffer = null;
+            delegatedOutputStream.close();
+        }
+
+        private void ensureTransaction() {
+            if (!inTransaction) {
+                throw new IllegalStateException("No transaction in progress");
+            }
+        }
+
+        private void checkClosed() {
+            if (closed) {
+                throw new IllegalStateException("Stream is closed");
+            }
+        }
+
+        private void endTransaction() {
+            buffer = null;
+            inTransaction = false;
+        }
+    }
+
+    private class JsonWriteContext implements WriteContext {
+        private final long estimatedSize;
+
+        public JsonWriteContext(long estimatedSize) {
+            this.estimatedSize = estimatedSize;
+        }
+
+        @Override
+        public long getEstimatedSize() {
+            return estimatedSize;
+        }
+    }
+
     private class JsonWriter implements Writer {
         private final JsonGenerator generator;
-        private final OutputStream outputStream;
+        private final TransactionalOutputStream outputStream;
         private final OutputCodecContext codecContext;
 
         private JsonWriter(final OutputStream outputStream, final OutputCodecContext codecContext) throws IOException {
-            this.outputStream = outputStream;
+            this.outputStream = new TransactionalOutputStream(outputStream);
             this.codecContext = codecContext;
             generator = JSON_FACTORY.createGenerator(outputStream, JsonEncoding.UTF8);
+            this.outputStream.transaction();
             generator.writeStartObject();
             generator.writeFieldName(config.getKeyName());
             generator.writeStartArray();
+            this.outputStream.commit();
         }
 
         @Override
@@ -63,9 +172,29 @@ public class JsonOutputCodec implements OutputCodec {
         }
 
         @Override
+        public void writeEvent(final Event event, final Predicate<WriteContext> writeIf) throws IOException {
+            Objects.requireNonNull(event);
+            final Map<String, Object> dataMap = getDataMapToSerialize(event);
+            this.outputStream.transaction();
+            objectMapper.writeValue(generator, dataMap);
+
+            // TODO: Should we include the entire size here? Or just the event?
+            final WriteContext writeContext = new JsonWriteContext(outputStream.buffer.size());
+
+            if(writeIf.test(writeContext)) {
+                outputStream.commit();
+                generator.flush();
+            } else {
+                outputStream.rollback();
+            }
+        }
+
+        @Override
         public void complete() throws IOException {
+            this.outputStream.transaction();
             generator.writeEndArray();
             generator.writeEndObject();
+            this.outputStream.commit();
             generator.close();
             outputStream.flush();
             outputStream.close();
