@@ -7,6 +7,9 @@
  * compatible open source license.
  */
 import com.github.jk1.license.render.TextReportRenderer
+import org.opensearch.dataprepper.gradle.release.PrintCurrentVersionTask
+import org.opensearch.dataprepper.gradle.release.PrintNextVersionTask
+import org.opensearch.dataprepper.gradle.release.UpdateVersionTask
 
 buildscript {
     dependencies {
@@ -332,17 +335,17 @@ task generateThirdPartyReport(type: Copy) {
     generateThirdPartyReport.dependsOn(generateLicenseReport)
 }
 
-task printNextVersion(type: org.opensearch.dataprepper.gradle.release.PrintNextVersionTask) {
+tasks.register('printNextVersion', PrintNextVersionTask) {
     description = 'Prints the next release version based on the current version in gradle.properties'
     group = 'release'
 }
 
-task printCurrentVersion(type: org.opensearch.dataprepper.gradle.release.PrintCurrentVersionTask) {
+tasks.register('printCurrentVersion', PrintCurrentVersionTask) {
     description = 'Prints the current version from gradle.properties'
     group = 'release'
 }
 
-task updateToNextVersion(type: org.opensearch.dataprepper.gradle.release.UpdateVersionTask) {
+tasks.register('updateToNextVersion', UpdateVersionTask) {
     description = 'Updates gradle.properties to the next release version'
     group = 'release'
 }
