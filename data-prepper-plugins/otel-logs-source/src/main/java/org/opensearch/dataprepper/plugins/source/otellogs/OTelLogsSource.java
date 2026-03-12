@@ -62,7 +62,9 @@ import io.grpc.ServerInterceptors;
 import io.grpc.protobuf.services.ProtoReflectionService;
 import io.opentelemetry.proto.collector.logs.v1.LogsServiceGrpc;
 
-@DataPrepperPlugin(name = "otel_logs_source", pluginType = Source.class, pluginConfigurationType = OTelLogsSourceConfig.class)
+@DataPrepperPlugin(name = "otlp_logs",
+        deprecatedName = "otel_logs_source",
+        pluginType = Source.class, pluginConfigurationType = OTelLogsSourceConfig.class)
 public class OTelLogsSource implements Source<Record<Object>> {
     private static final Logger LOG = LoggerFactory.getLogger(OTelLogsSource.class);
     static final String SERVER_CONNECTIONS = "serverConnections";
