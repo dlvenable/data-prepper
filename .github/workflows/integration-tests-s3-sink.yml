@@ -64,8 +64,13 @@ jobs:
       - name: Get resources from CDK stacks
         id: cdk-resources
         run: |
-          echo "bucket=$(aws cloudformation describe-stacks --stack-name S3SinkStack --query 'Stacks[0].Outputs[?ExportName==`DataPrepperAwsTesting-S3SinkBucketName`].OutputValue' --output text)" >> "$GITHUB_OUTPUT"
-          echo "kms_key=$(aws cloudformation describe-stacks --stack-name CommonKmsStack --query 'Stacks[0].Outputs[?ExportName==`DataPrepperAwsTesting-KmsKeyId`].OutputValue' --output text)" >> "$GITHUB_OUTPUT"
+          set -e
+          bucket=$(aws cloudformation describe-stacks --stack-name S3SinkStack --query 'Stacks[0].Outputs[?ExportName==`DataPrepperAwsTesting-S3SinkBucketName`].OutputValue' --output text)
+          kms_key=$(aws cloudformation describe-stacks --stack-name CommonKmsStack --query 'Stacks[0].Outputs[?ExportName==`DataPrepperAwsTesting-KmsKeyId`].OutputValue' --output text)
+          if [ -z "$bucket" ] || [ "$bucket" = "None" ]; then echo "Failed to get S3 bucket name"; exit 1; fi
+          if [ -z "$kms_key" ] || [ "$kms_key" = "None" ]; then echo "Failed to get KMS key ID"; exit 1; fi
+          echo "bucket=$bucket" >> "$GITHUB_OUTPUT"
+          echo "kms_key=$kms_key" >> "$GITHUB_OUTPUT"
 
       - name: Run S3 Sink integration tests
         run: |
