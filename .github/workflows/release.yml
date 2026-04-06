@@ -198,7 +198,7 @@ jobs:
           files: |
             release-description.yaml
 
-  changelog:
+  generate-changelog:
     runs-on: ubuntu-latest
     needs: promote
 
