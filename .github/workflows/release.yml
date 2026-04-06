@@ -45,7 +45,7 @@ jobs:
     - name: Get Version
       run:  grep '^version=' gradle.properties >> $GITHUB_ENV
     - name: Build Jar Files
-      run: ./gradlew --parallel --max-workers 2 build
+      run: ./gradlew --parallel --max-workers 2 assemble
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
