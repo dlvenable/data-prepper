@@ -50,6 +50,12 @@ jobs:
     steps:
     - name: Checkout Data Prepper
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      with:
+        # Do not persist the checkout credentials in the local git config.
+        # When pushing to a fork, peter-evans/create-pull-request adds its own
+        # authentication, and a persisted Authorization header would collide
+        # with it, causing 'Duplicate header: "Authorization"' (HTTP 400).
+        persist-credentials: false
 
     - name: Validate release branch
       id: validate_branch
