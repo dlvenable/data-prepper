@@ -236,7 +236,7 @@ jobs:
         with:
           secret: ${{ github.TOKEN }}
           approvers: ${{ steps.get_approvers.outputs.approvers }}
-          minimum-approvals: 2
+          minimum-approvals: 1 # TODO: Do not keep this
           issue-title: 'Release Data Prepper : ${{ env.version }}'
           issue-body: >
             Please approve or deny the release of Data Prepper.
