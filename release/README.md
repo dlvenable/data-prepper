@@ -12,31 +12,34 @@ See [RELEASING.md](../RELEASING.md) for instructions to follow for any release.
 
 ## Configuring the GitHub repo
 
-The OpenSearch project does not permit this repository's workflows to push branches and open pull requests (PRs)
+Running a release requires both AWS staging resources and a number of GitHub Actions secrets and variables.
+The release workflows ([Prepare Release Branch](../.github/workflows/release-prepare-branch.yml) and
+[Release Artifacts](../.github/workflows/release.yml)) read these to build and upload the artifacts and to
+open their pull requests (PRs).
+
+### Deploy the AWS staging resources
+
+The release build uploads archives and Maven artifacts to AWS S3 and publishes Docker images to a staging ECR
+repository. These resources, and the IAM role that GitHub Actions assumes to access them, are provisioned by
+the [staging-resources-cdk](staging-resources-cdk/README.md) project. Follow that project's README to install
+the CDK and deploy the stacks before running a release.
+
+The CDK deployment provides the values you will use for the `RELEASE_IAM_ROLE`, `ARCHIVES_BUCKET_NAME`,
+`ARCHIVES_PUBLIC_URL`, and `ECR_REPOSITORY_URL` secrets described below.
+
+### Configure a fork for pull requests
+
+The OpenSearch project does not permit this repository's workflows to push branches and open PRs
 against itself. Instead, the release workflows push their PR branches to a fork and open the PR from that fork
-back against this repository. This applies to both the
-[Prepare Release Branch](../.github/workflows/release-prepare-branch.yml) workflow (the release preparation PR)
-and the [Release Artifacts](../.github/workflows/release.yml) workflow (the changelog PR).
+back against this repository. This applies to both the release preparation PR and the changelog PR.
 
 To run a release build, you must have a fork of Data Prepper used for staging these changes and PRs.
 This must be an actual GitHub fork of the repository you are releasing, because GitHub only permits
 cross-repository PRs between repositories in the same fork network.
 
-Configure the following on the repository that runs the release workflows.
-
-### Repository variable
-
-Create a [repository variable](https://docs.github.com/en/actions/learn-github-actions/variables) named
-`RELEASE_FORK_REPOSITORY`. Set it to the `owner/repo` of the fork that the PR branches are pushed to,
-for example `opensearch-project-release/data-prepper`.
-
-### Repository secret
-
-Create a [repository secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) named
-`RELEASE_FORK_TOKEN`. Set it to a **classic** personal access token (PAT) that the workflows use both to
-push the branch to the fork and to open the PR against this repository.
-
-The token must meet the following requirements.
+The fork is identified by the `RELEASE_FORK_REPOSITORY` variable, and the token used to push to it and open
+the PR is the `RELEASE_FORK_TOKEN` secret. `RELEASE_FORK_TOKEN` must be a **classic** personal access token
+(PAT) meeting the following requirements.
 
 * It is a classic PAT. A fine-grained token does not work because the single token must act on two
   repositories (the fork it pushes to and this repository it opens the PR against).
@@ -48,6 +51,21 @@ The token must meet the following requirements.
 Because a classic PAT acts as its owner across all of their repositories, use a dedicated release or bot
 account to own this token rather than a maintainer's personal account, and set a short expiration so the
 token is rotated regularly.
+
+### Secrets and variables
+
+Configure the following on the repository that runs the release workflows. Create variables as
+[repository variables](https://docs.github.com/en/actions/learn-github-actions/variables) and secrets as
+[repository secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets).
+
+| Name | Type | Source | Description |
+| ---- | ---- | ------ | ----------- |
+| `RELEASE_FORK_REPOSITORY` | Variable | You | The `owner/repo` of the fork the PR branches are pushed to, for example `opensearch-ci-bot/data-prepper`. |
+| `RELEASE_FORK_TOKEN` | Secret | You | A classic PAT used to push the PR branch to the fork and open the PR. See the requirements above. |
+| `RELEASE_IAM_ROLE` | Secret | CDK | The ARN of the IAM role GitHub Actions assumes to access the staging resources. |
+| `ARCHIVES_BUCKET_NAME` | Secret | CDK | The name of the S3 bucket the release archives and Maven artifacts are uploaded to. |
+| `ARCHIVES_PUBLIC_URL` | Secret | CDK | The public base URL the uploaded archives are served from, used by the tarball smoke tests. |
+| `ECR_REPOSITORY_URL` | Secret | CDK | The URL of the staging ECR repository the Docker images are pushed to. |
 
 ## Testing release changes
 
