@@ -66,6 +66,7 @@ Additionally, OpenSearch Data Prepper `2.6.1` and `2.6.2` were also released fro
 
 If you are creating a new major/minor release, then you will need to create the release branch.
 The OpenSearch project restricts branch creation, so you must request the branch by creating a [GitHub Request](https://github.com/opensearch-project/.github/issues/new?template=GITHUB_REQUEST_TEMPLATE.yaml).
+These requests typically take 1 to 2 business days to complete, so plan accordingly.
 
 Provide:
 * The repository: `data-prepper`
@@ -79,7 +80,7 @@ Create a backport label for the release branch.
 Steps:
 1. Go to the [labels page here](https://github.com/opensearch-project/data-prepper/labels).
 2. Select `New label`
-3. Name the branch `backport {major}.minor`. For example, `backport 2.6`
+3. Name the branch `backport {major}.{minor}`. For example, `backport 2.6`
 
 Once the branch is created, you will need to backport other changes into the branch if you want them in the release.
 
@@ -232,7 +233,7 @@ Steps:
 * Go to the [releases page](https://github.com/opensearch-project/data-prepper/releases)
 * Find the new pre-release. It should be at the top.
 * Replace the auto-generated release notes with the release notes created previous to the release.
-* Change the label from pre-release to latest.
+* Under the _Release label_ heading, change the label from _Pre-release_ to _Latest_, then update the release.
 
 ### Community engagement
 

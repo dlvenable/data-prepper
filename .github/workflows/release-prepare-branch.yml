@@ -174,7 +174,7 @@ jobs:
           - [ ] Run the [Release Artifacts workflow](https://github.com/opensearch-project/data-prepper/actions/workflows/release.yml)
           - [ ] Approve the release issue (requires 2 maintainer approvals)
           - [ ] Update the pre-release with release notes
-          - [ ] Publish the release
+          - [ ] Publish the release (under "Release label", change from "Pre-release" to "Latest")
           - [ ] Close the milestone
           
           ---
